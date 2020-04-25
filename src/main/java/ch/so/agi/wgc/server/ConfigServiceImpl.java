@@ -32,17 +32,7 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     
     @Override
     public ConfigResponse configServer() throws IllegalArgumentException, IOException {
-        
-        log.info(config.getBackgroundMaps().get(0).getLayer());
-        
-        
         ConfigResponse response = new ConfigResponse();
-        
-        List<BackgroundMap> backgroundMaps = new ArrayList<BackgroundMap>();
-        BackgroundMap myMap = new BackgroundMap();
-        myMap.setId("fuck you");
-        backgroundMaps.add(myMap);
-        
         response.setBackgroundMaps(config.getBackgroundMaps());
         return response;
     }

@@ -1,19 +1,19 @@
 package ch.so.agi.wgc.shared;
 
-import java.io.Serializable;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class BackgroundMap implements Serializable, IsSerializable {
-    private static final long serialVersionUID = 1L;
-
+public class BackgroundMap implements IsSerializable {
     public BackgroundMap() {}
     
     private String id;
     private String title;
     private String url;
     private String layer;
-    
+    private String requestEncoding = "REST";
+    private String format = "image/png";
+    private String matrixSet = "EPSG:2056";
+    private String style = "default";
+
     public String getId() {
         return id;
     }
@@ -38,9 +38,32 @@ public class BackgroundMap implements Serializable, IsSerializable {
     public void setLayer(String layer) {
         this.layer = layer;
     }
-    
-//    @Override
-//    public String toString() {
-//        return "BackgroundMap [id=" + id + ", title=" + title + ", url=" + url + ", layer=" + layer + "]";
-//    }
+    public String getRequestEncoding() {
+        return requestEncoding;
+    }
+    public void setRequestEncoding(String requestEncoding) {
+        this.requestEncoding = requestEncoding;
+    }
+    public String getFormat() {
+        return format;
+    }
+    public void setFormat(String format) {
+        this.format = format;
+    }
+    public String getMatrixSet() {
+        return matrixSet;
+    }
+    public void setMatrixSet(String matrixSet) {
+        this.matrixSet = matrixSet;
+    }
+    public String getStyle() {
+        return style;
+    }
+    public void setStyle(String style) {
+        this.style = style;
+    }
+    @Override
+    public String toString() {
+        return "BackgroundMap [id=" + id + ", title=" + title + ", url=" + url + ", layer=" + layer + "]";
+    }
 }

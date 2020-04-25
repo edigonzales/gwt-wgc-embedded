@@ -120,7 +120,6 @@ public class AppEntryPoint implements EntryPoint {
     
     public void onModuleLoad() {
         configService.configServer(new AsyncCallback<ConfigResponse>() {
-
             @Override
             public void onFailure(Throwable caught) {
                 console.log("fail");
@@ -130,26 +129,10 @@ public class AppEntryPoint implements EntryPoint {
             @Override
             public void onSuccess(ConfigResponse result) {
                 console.log("success");
-                List<BackgroundMap> backgroundMaps = result.getBackgroundMaps();
-                console.log(backgroundMaps.get(0).getId());
-                
+                List<BackgroundMap> backgroundMaps = result.getBackgroundMaps();                
+                init();
             }
-            
         });
-        
-        
-//        settingsService.settingsServer(new AsyncCallback<SettingsResponse>() {
-//            @Override
-//            public void onFailure(Throwable caught) {                
-//                GWT.log("error: " + caught.getMessage());
-//            }
-//
-//            @Override
-//            public void onSuccess(SettingsResponse result) {
-////                MY_VAR = (String) result.getSettings().get("MY_VAR");
-//                init();
-//            }
-//        });
     }
 
     @SuppressWarnings("unchecked")
@@ -168,6 +151,23 @@ public class AppEntryPoint implements EntryPoint {
             // getParameterMap()
             // String egrid = Window.Location.getParameter("egrid").toString();
         }
+        
+        String bgLayer = "";
+        if (Window.Location.getParameter("bgLayer") != null) {
+            bgLayer = Window.Location.getParameter("bgLayer").toString();
+            console.log("bgLayer: ", bgLayer);            
+        } else {
+            DomGlobal.window.alert("bgLayer missing");
+            console.error("bgLayer missing");
+            return;
+        }
+
+
+        
+        
+//        java.util.Map<String,List<String>> paramsMap = Window.Location.getParameterMap();
+//        console.log(paramsMap.toString());
+        
     }
 
    private static native void updateURLWithoutReloading(String newUrl) /*-{
