@@ -14,7 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import ch.so.agi.wgc.shared.ApplicationConfig;
-import ch.so.agi.wgc.shared.BackgroundMap;
+import ch.so.agi.wgc.shared.BackgroundMapConfig;
 import ch.so.agi.wgc.shared.ConfigResponse;
 import ch.so.agi.wgc.shared.ConfigService;
 

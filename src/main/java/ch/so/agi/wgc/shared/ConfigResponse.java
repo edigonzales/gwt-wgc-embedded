@@ -4,13 +4,13 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ConfigResponse implements IsSerializable {
-    private List<BackgroundMap> backgroundMaps;
+    private List<BackgroundMapConfig> backgroundMaps;
     
-    public List<BackgroundMap> getBackgroundMaps() {
+    public List<BackgroundMapConfig> getBackgroundMaps() {
         return backgroundMaps;
     }
 
-    public void setBackgroundMaps(List<BackgroundMap> backgroundMaps) {
+    public void setBackgroundMaps(List<BackgroundMapConfig> backgroundMaps) {
         this.backgroundMaps = backgroundMaps;
     }
 }

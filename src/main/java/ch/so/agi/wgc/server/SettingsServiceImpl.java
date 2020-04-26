@@ -13,7 +13,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import ch.so.agi.wgc.shared.ApplicationConfig;
-import ch.so.agi.wgc.shared.BackgroundMap;
+import ch.so.agi.wgc.shared.BackgroundMapConfig;
 import ch.so.agi.wgc.shared.SettingsResponse;
 import ch.so.agi.wgc.shared.SettingsService;
 
@@ -43,7 +43,7 @@ public class SettingsServiceImpl extends RemoteServiceServlet implements Setting
         
 //        settings.put("CONFIG", config.getBackgroundMaps());
         
-        BackgroundMap foo = new BackgroundMap();
+        BackgroundMapConfig foo = new BackgroundMapConfig();
         foo.setId("arsch");
         
         settings.put("CONFIG", foo);

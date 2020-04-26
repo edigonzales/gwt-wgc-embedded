@@ -2,8 +2,8 @@ package ch.so.agi.wgc.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class BackgroundMap implements IsSerializable {
-    public BackgroundMap() {}
+public class BackgroundMapConfig implements IsSerializable {
+    public BackgroundMapConfig() {}
     
     private String id;
     private String title;
@@ -64,6 +64,6 @@ public class BackgroundMap implements IsSerializable {
     }
     @Override
     public String toString() {
-        return "BackgroundMap [id=" + id + ", title=" + title + ", url=" + url + ", layer=" + layer + "]";
+        return "BackgroundMapConfig [id=" + id + ", title=" + title + ", url=" + url + ", layer=" + layer + "]";
     }
 }
