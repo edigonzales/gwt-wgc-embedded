@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import ch.so.agi.wgc.server.ConfigServiceImpl;
-import ch.so.agi.wgc.server.SettingsServiceImpl;
 
 @ServletComponentScan
 @SpringBootApplication
@@ -21,13 +20,6 @@ public class BootGwtApplication {
     @Bean
     public ServletRegistrationBean configServletBean() {
         ServletRegistrationBean bean = new ServletRegistrationBean(new ConfigServiceImpl(), "/module1/config");
-        bean.setLoadOnStartup(1);
-        return bean;
-    }
-		  
-    @Bean
-    public ServletRegistrationBean settingsServletBean() {
-        ServletRegistrationBean bean = new ServletRegistrationBean(new SettingsServiceImpl(), "/module1/settings");
         bean.setLoadOnStartup(1);
         return bean;
     }

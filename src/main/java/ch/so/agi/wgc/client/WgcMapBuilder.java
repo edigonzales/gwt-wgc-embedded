@@ -27,13 +27,18 @@ import ol.tilegrid.WmtsTileGrid;
 import ol.tilegrid.WmtsTileGridOptions;
 import proj4.Proj4;
 
-public class MapBuilder {
+public class WgcMapBuilder {
+    private String BACKGROUND_LAYER_ATTR_NAME = "bgLayer";
+    private String TITLE_ATTR_NAME = "title";
+    private String ID_ATTR_NAME = "id";
+    
     private Projection projection;
     private ol.Map map;
     private String mapId;
     private HashMap<String, Tile> backgroundLayers = new HashMap<String, Tile>();
+    private String baseWmsUrl = "https://geo.so.ch/api/wms"; // TODO -> config
     
-    public MapBuilder() {
+    public WgcMapBuilder() {
         Proj4.defs("EPSG:2056", "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs");
         
         ProjectionOptions projectionOptions = OLFactory.createOptions();
@@ -44,43 +49,47 @@ public class MapBuilder {
         projection = new Projection(projectionOptions);
     }
     
-    public MapBuilder setMapId(String mapId) {
+    public WgcMapBuilder setMapId(String mapId) {
         this.mapId = mapId;
         return this;
     }
     
-    public MapBuilder addBackgroundLayers(List<BackgroundMapConfig> backgroundMapsConfig) {
-        console.log(backgroundMapsConfig);
-        
-        for (BackgroundMapConfig mapConfig : backgroundMapsConfig) {
-//            mapConfig.get
-        }
-        
+    public WgcMapBuilder setBaseWmsUrl(String baseWmsUrl) {
+        this.baseWmsUrl = baseWmsUrl; 
         return this;
     }
     
+    public WgcMapBuilder addBackgroundLayers(List<BackgroundMapConfig> backgroundMapsConfig) {        
+        for (BackgroundMapConfig config : backgroundMapsConfig) {
+            WmtsOptions wmtsOptions = OLFactory.createOptions();
+            wmtsOptions.setUrl(config.getUrl());
+            wmtsOptions.setLayer(config.getLayer());
+            wmtsOptions.setRequestEncoding(config.getRequestEncoding());
+            wmtsOptions.setFormat(config.getFormat());
+            wmtsOptions.setMatrixSet(config.getMatrixSet());
+            wmtsOptions.setStyle(config.getStyle());
+            wmtsOptions.setProjection(projection);
+            wmtsOptions.setWrapX(true);
+            wmtsOptions.setTileGrid(createWmtsTileGrid(projection));
+            
+            Wmts wmtsSource = new Wmts(wmtsOptions);
+            
+            LayerOptions wmtsLayerOptions = OLFactory.createOptions();
+            wmtsLayerOptions.setSource(wmtsSource);
+
+            Tile wmtsLayer = new Tile(wmtsLayerOptions);
+            wmtsLayer.setOpacity(1);
+            wmtsLayer.setVisible(false);
+            wmtsLayer.set(BACKGROUND_LAYER_ATTR_NAME, true);
+            wmtsLayer.set(TITLE_ATTR_NAME, config.getTitle());
+            wmtsLayer.set(ID_ATTR_NAME, config.getId());
+            
+            backgroundLayers.put(config.getId(), wmtsLayer);
+        }
+        return this;
+    }
     
-    public ol.Map build() {        
-        WmtsOptions wmtsOptions = OLFactory.createOptions();
-        wmtsOptions.setUrl("https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
-        wmtsOptions.setLayer("ch.so.agi.hintergrundkarte_sw");
-        wmtsOptions.setRequestEncoding("REST");
-        wmtsOptions.setFormat("image/png");
-        wmtsOptions.setMatrixSet("EPSG:2056");
-        wmtsOptions.setStyle("default");
-        wmtsOptions.setProjection(projection);
-        wmtsOptions.setWrapX(true);
-        wmtsOptions.setTileGrid(createWmtsTileGrid(projection));
-        
-        Wmts wmtsSource = new Wmts(wmtsOptions);
-        
-        LayerOptions wmtsLayerOptions = OLFactory.createOptions();
-        wmtsLayerOptions.setSource(wmtsSource);
-
-        Tile wmtsLayer = new Tile(wmtsLayerOptions);
-        wmtsLayer.setOpacity(1.0);
-        wmtsLayer.set("bgLayer", true);
-
+    public WgcMap build() {        
         ViewOptions viewOptions = OLFactory.createOptions();
         viewOptions.setProjection(projection);
         viewOptions.setResolutions(new double[] { 4000.0, 2000.0, 1000.0, 500.0, 250.0, 100.0, 50.0, 20.0, 10.0, 5.0, 2.5, 1.0, 0.5, 0.25, 0.1 });
@@ -99,9 +108,11 @@ public class MapBuilder {
         interactionOptions.setPinchRotate(false);
         mapOptions.setInteractions(Interaction.defaults(interactionOptions));
 
-        ol.Map map = new ol.Map(mapOptions);
-        map.addLayer(wmtsLayer);
-        
+        WgcMap map = new WgcMap(mapOptions, baseWmsUrl);
+
+        backgroundLayers.forEach((key, value) -> {      
+            map.addLayer(value);
+        });        
         return map;
     }
     

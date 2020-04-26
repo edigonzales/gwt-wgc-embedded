@@ -4,6 +4,7 @@ import static elemental2.dom.DomGlobal.console;
 import static org.jboss.elemento.Elements.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.dominokit.domino.ui.style.ColorScheme;
@@ -21,6 +22,9 @@ import ch.so.agi.wgc.shared.ConfigService;
 import ch.so.agi.wgc.shared.ConfigServiceAsync;
 import elemental2.dom.DomGlobal;
 import ol.Map;
+import ol.MapBrowserEvent;
+import ol.MapEvent;
+import ol.events.Event;
 
 public class AppEntryPoint implements EntryPoint {
     private MyMessages messages = GWT.create(MyMessages.class);
@@ -33,7 +37,7 @@ public class AppEntryPoint implements EntryPoint {
     
     private String MAP_DIV_ID = "map";
 
-    private Map map;
+    private WgcMap map;
     
     public void onModuleLoad() {
         configService.configServer(new AsyncCallback<ConfigResponse>() {
@@ -72,14 +76,56 @@ public class AppEntryPoint implements EntryPoint {
             console.error("bgLayer missing");
             return;
         }
+        List<String> layerList = new ArrayList<String>();
+        if (Window.Location.getParameter("layers") != null) {
+            String layers = Window.Location.getParameter("layers").toString();
+            layerList = Arrays.asList(layers.split(",", -1));
+            console.log("layers: ", layerList);
+        }
         
-        map = new MapBuilder()
+        console.log(Window.Location.getParameterMap().toString());
+        
+        
+        
+        map = new WgcMapBuilder()
                 .setMapId(MAP_DIV_ID)
                 .addBackgroundLayers(backgroundMapsConfig)
                 .build();
 
+        map.changeBackgroundLayer(bgLayer);
 
-               
+        layerList.forEach(l -> {
+            console.log(l);
+            map.addLayer(l);
+        });
+        
+        body().add(new BigMapLink(map).element());
+        
+        
+        
+        // TODO getfeatureinfo
+        map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
+            @Override
+            public void onEvent(MapBrowserEvent event) {
+                console.log(event.getCoordinate().toString());
+            }
+        });        
+        
+        // TODO update window.location
+        map.addMapZoomEndListener(new ol.event.EventListener<MapEvent>() {
+            @Override
+            public void onEvent(MapEvent event) {
+                console.log("addMapZoomEndListener...");
+            }
+        });
+        
+        map.addMoveEndListener(new ol.event.EventListener<MapEvent>() {
+            @Override
+            public void onEvent(MapEvent event) {
+                console.log("addMoveEndListener...");
+            }
+        });
+        
     }
 
    private static native void updateURLWithoutReloading(String newUrl) /*-{

@@ -12,6 +12,27 @@ body, div {
     height: 100%;
 }
 
+/* BigMapLink element */
+.bigMapLink {
+    background-color: white;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+    position: absolute;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    top: 5px;
+    left: 5px;
+    width: 100px;
+    height: 30px; 
+    overflow-y: auto;
+    max-width: 100%;
+}
+
+
+
+
+
+
 #searchPanel {
 	margin-top: 200px;
     margin-left: auto;

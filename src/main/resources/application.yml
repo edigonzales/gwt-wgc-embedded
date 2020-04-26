@@ -22,15 +22,15 @@ logging:
 app:
   myVar: ${VAR:defaultValue}
   backgroundMaps:
-    - id: blackAndWhite
+    - id: ch.so.agi.hintergrundkarte_sw
       title: Hintergrundkarte schwarz-weiss
       url: https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}
       layer: ch.so.agi.hintergrundkarte_sw 
-    - id: colored
+    - id: ch.so.agi.hintergrundkarte_farbig
       title: Hintergrundkarte farbig    
       url: https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}
       layer: ch.so.agi.hintergrundkarte_farbig 
-    - id: ortho
+    - id: ch.so.agi.hintergrundkarte_ortho
       title: Luftbild    
       url: https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}
       layer: ch.so.agi.hintergrundkarte_ortho 
