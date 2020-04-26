@@ -115,6 +115,7 @@ public class AppEntryPoint implements EntryPoint {
         });        
         
         // TODO update window.location
+        // Reicht MoveEndListener?
         map.addMapZoomEndListener(new ol.event.EventListener<MapEvent>() {
             @Override
             public void onEvent(MapEvent event) {
