@@ -51,6 +51,11 @@ public class WgcMap extends ol.Map {
         this.addLayer(wmsLayer);
     } 
 
+    // TODO
+    public String getVisibleLayer() {
+        return null;
+    }
+    
     // Get Openlayers map layer by id.
     private Base getMapLayerById(String id) {
         ol.Collection<Base> layers = this.getLayers();

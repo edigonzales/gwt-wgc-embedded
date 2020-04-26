@@ -104,6 +104,9 @@ public class AppEntryPoint implements EntryPoint {
         
         
         // TODO getfeatureinfo
+        // - url in config
+        // - Den Rest selber zusammenstöpseln (und berechnen).
+        // - fetch()
         map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
             @Override
             public void onEvent(MapBrowserEvent event) {
