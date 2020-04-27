@@ -2,6 +2,9 @@ package ch.so.agi.wgc.client;
 
 import static elemental2.dom.DomGlobal.console;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import elemental2.dom.DomGlobal;
 import ol.MapOptions;
 import ol.OLFactory;
@@ -12,32 +15,43 @@ import ol.source.ImageWmsOptions;
 import ol.source.ImageWmsParams;
 
 public class WgcMap extends ol.Map {
+    private String BACKGROUND_LAYER_ATTR_NAME = "bgLayer";
+    private String TITLE_ATTR_NAME = "title";
     private String ID_ATTR_NAME = "id";
 
-    private String baseWmsUrl;
+    private String baseUrlWms;
+    private String baseUrlFeatureInfo;
+    private String baseUrlBigMap;
         
-    public WgcMap(MapOptions mapOptions, String baseWmsUrl) {
+    private String backgroundLayer;
+    private List<String> foregroundLayers = new ArrayList<String>();
+    private List<Double> foregroundLayerOpacities = new ArrayList<Double>();
+    
+    public WgcMap(MapOptions mapOptions, String baseUrlWms, String baseUrlFeatureInfo, String baseUrlBigMap) {
         super(mapOptions);
-        this.baseWmsUrl = baseWmsUrl;
+        this.baseUrlWms = baseUrlWms;
+        this.baseUrlFeatureInfo = baseUrlFeatureInfo;
+        this.baseUrlBigMap = baseUrlBigMap;
     }
     
     public void changeBackgroundLayer(String id) {
         Base layer = this.getMapLayerById(id);
         if (layer != null) {
             layer.setVisible(true);
+            backgroundLayer = id;
         } else {
             DomGlobal.window.alert("Backgroundlayer '" + id + "' not found.");
         }
     }
     
-    public void addLayer(String id) {
+    public void addForegroundLayer(String id, double opacity) {
         ImageWmsParams imageWMSParams = OLFactory.createOptions();
         imageWMSParams.setLayers(id);
         imageWMSParams.set("FORMAT", "image/png");
         imageWMSParams.set("TRANSPARENT", "true");
 
         ImageWmsOptions imageWMSOptions = OLFactory.createOptions();
-        imageWMSOptions.setUrl(baseWmsUrl);
+        imageWMSOptions.setUrl(baseUrlWms);
         imageWMSOptions.setRatio(1.2f);
         imageWMSOptions.setParams(imageWMSParams);
 
@@ -47,13 +61,60 @@ public class WgcMap extends ol.Map {
         layerOptions.setSource(imageWMSSource);
 
         ol.layer.Image wmsLayer = new ol.layer.Image(layerOptions);
+        wmsLayer.set(ID_ATTR_NAME, id);
+        wmsLayer.setOpacity(opacity);
         
         this.addLayer(wmsLayer);
+        
+        this.foregroundLayers.add(id);
+        this.foregroundLayerOpacities.add(opacity);
     } 
 
-    // TODO
-    public String getVisibleLayer() {
-        return null;
+    public String getBaseUrlFeatureInfo() {
+        return baseUrlFeatureInfo;
+    }
+    
+    /*
+     * 
+     */
+    public List<String> getForegroundLayers() {
+//        List<String> layerList = new ArrayList<String>();
+//        ol.Collection<Base> layers = this.getLayers();
+//        for (int i = 0; i < layers.getLength(); i++) {  
+//            Base item = layers.item(i);
+//            if (item.get(BACKGROUND_LAYER_ATTR_NAME) != null && (boolean) item.get(BACKGROUND_LAYER_ATTR_NAME) == true) {
+//                // do nothing: background layer
+//            } else {
+//                if (item.getVisible()) {
+//                    layerList.add((String)item.get(ID_ATTR_NAME)); 
+//                }
+//            }
+//        }
+//        return layerList;
+        return foregroundLayers;
+    }
+    
+    public String createBigMapUrl() {
+        // Nur notwendig, weil im Web GIS Client die Hintergrundkarte
+        // nicht mit dem WMTS-Layernamen angesprochen wird.
+        String bg = backgroundLayer.substring(10);
+        
+        // Zusammenbringen der Layer und der Layeropazität.
+        String l = "";
+        for (int i=0; i < foregroundLayers.size(); i++) {
+            l += foregroundLayers.get(i);
+            
+            int transparency = (int) ((1.0 - foregroundLayerOpacities.get(i)) * 255.0);
+            l += "[" + String.valueOf(transparency) + "]";
+            
+            if (i != foregroundLayers.size()-1) {
+                l += ",";
+            }
+        }
+        console.log(l);
+        
+        baseUrlBigMap += "?bl=" + bg + "&l=" + l;
+        return baseUrlBigMap;
     }
     
     // Get Openlayers map layer by id.

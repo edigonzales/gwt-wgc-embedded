@@ -3,20 +3,26 @@ package ch.so.agi.wgc.client;
 import org.jboss.elemento.Attachable;
 import org.jboss.elemento.IsElement;
 
+import com.gargoylesoftware.htmlunit.javascript.host.Console;
+
+import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.Location;
 import elemental2.dom.MutationRecord;
 
 import static org.jboss.elemento.Elements.*;
+import static elemental2.dom.DomGlobal.console;
+
+import org.dominokit.domino.ui.utils.TextNode;
 
 public class BigMapLink implements IsElement<HTMLElement>, Attachable {
     
     private final HTMLElement root;
     
-    public BigMapLink(WgcMap map) {
-        
-        
-        
-        root = div().id("bigMapLink").css("bigMapLink").element();
+    public BigMapLink(WgcMap map, String url) {
+        Location location = DomGlobal.window.location;
+        String imageUrl = location.getProtocol() + "//" + location.getHost() + location.getPathname() + "favicon.ico";
+        root = a().css("bigMapLink").attr("href", url).attr("target", "_blank").add(div().add(img().attr("src", imageUrl)).add(span().style("margin-left: 5px;")).add(span().textContent("View on geo.so.ch/map"))).element();
     }
     
     @Override

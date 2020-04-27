@@ -43,12 +43,12 @@ public class AppEntryPoint implements EntryPoint {
         configService.configServer(new AsyncCallback<ConfigResponse>() {
             @Override
             public void onFailure(Throwable caught) {
-                console.log("fail");
+                console.error(caught.getMessage());
+                DomGlobal.window.alert(caught.getMessage());
             }
 
             @Override
             public void onSuccess(ConfigResponse result) {
-                console.log("success");
                 backgroundMapsConfig = result.getBackgroundMaps();                
                 init();
             }
@@ -70,7 +70,6 @@ public class AppEntryPoint implements EntryPoint {
         String bgLayer = "";
         if (Window.Location.getParameter("bgLayer") != null) {
             bgLayer = Window.Location.getParameter("bgLayer").toString();
-            console.log("bgLayer: ", bgLayer);            
         } else {
             DomGlobal.window.alert("bgLayer missing");
             console.error("bgLayer missing");
@@ -82,8 +81,17 @@ public class AppEntryPoint implements EntryPoint {
             layerList = Arrays.asList(layers.split(",", -1));
             console.log("layers: ", layerList);
         }
-        
-        console.log(Window.Location.getParameterMap().toString());
+        List<Double> opacityList = new ArrayList<Double>();
+        if (Window.Location.getParameter("layers_opacity") != null) {
+            String opacities = Window.Location.getParameter("layers_opacity").toString();
+            List<String> rawList = Arrays.asList(opacities.split(","));
+            for(int i=0; i<rawList.size(); i++) {
+                opacityList.add(Double.parseDouble(rawList.get(i)));
+            }
+            console.log("opacities: ", opacityList);
+        }
+
+//        console.log(Window.Location.getParameterMap().toString());
         
         
         
@@ -93,13 +101,18 @@ public class AppEntryPoint implements EntryPoint {
                 .build();
 
         map.changeBackgroundLayer(bgLayer);
-
-        layerList.forEach(l -> {
-            console.log(l);
-            map.addLayer(l);
-        });
         
-        body().add(new BigMapLink(map).element());
+        for (int i=0; i<layerList.size(); i++) {
+            map.addForegroundLayer(layerList.get(i), opacityList.get(i));
+        }
+//
+//        layerList.forEach(l -> {
+////            console.log(l);
+//            map.addLayer(l, );
+//        });
+        
+        String bigMapUrl = map.createBigMapUrl();
+        body().add(new BigMapLink(map, bigMapUrl).element());
         
         
         
@@ -111,6 +124,31 @@ public class AppEntryPoint implements EntryPoint {
             @Override
             public void onEvent(MapBrowserEvent event) {
                 console.log(event.getCoordinate().toString());
+                
+                double resolution = map.getView().getResolution();
+                console.log(map.getView().getResolution());
+
+                // 50/51/101-Ansatz ist anscheinend bei OpenLayers normal.
+                // -> siehe baseUrlFeatureInfo resp. ein Original-Request
+                // im Web GIS Client.
+                double minX = event.getCoordinate().getX() - 50 * resolution;
+                double maxX = event.getCoordinate().getX() + 51 * resolution;
+                double minY = event.getCoordinate().getY() - 50 * resolution;
+                double maxY = event.getCoordinate().getY() + 51 * resolution;
+
+                String baseUrlFeatureInfo = map.getBaseUrlFeatureInfo();
+                List<String> foregroundLayers = map.getForegroundLayers();
+                console.log(foregroundLayers);
+                String layers = String.join(",", foregroundLayers);
+                String urlFeatureInfo = baseUrlFeatureInfo + "&layers=" + layers;
+                urlFeatureInfo += "&query_layers=" + layers;
+                urlFeatureInfo += "&bbox=" + minX + "," + minY + "," + maxX + "," + maxY;
+                
+                console.log(urlFeatureInfo);
+                
+                
+                
+                
             }
         });        
         
@@ -119,14 +157,14 @@ public class AppEntryPoint implements EntryPoint {
         map.addMapZoomEndListener(new ol.event.EventListener<MapEvent>() {
             @Override
             public void onEvent(MapEvent event) {
-                console.log("addMapZoomEndListener...");
+//                console.log("addMapZoomEndListener...");
             }
         });
         
         map.addMoveEndListener(new ol.event.EventListener<MapEvent>() {
             @Override
             public void onEvent(MapEvent event) {
-                console.log("addMoveEndListener...");
+//                console.log("addMoveEndListener...");
             }
         });
         

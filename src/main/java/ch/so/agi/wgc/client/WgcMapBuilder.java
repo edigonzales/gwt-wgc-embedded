@@ -33,10 +33,14 @@ public class WgcMapBuilder {
     private String ID_ATTR_NAME = "id";
     
     private Projection projection;
-    private ol.Map map;
     private String mapId;
     private HashMap<String, Tile> backgroundLayers = new HashMap<String, Tile>();
-    private String baseWmsUrl = "https://geo.so.ch/api/wms"; // TODO -> config
+    private String baseUrlWms = "https://geo.so.ch/api/wms"; // TODO -> config
+    private String baseUrlFeatureInfo = "https://geo.so.ch/api/v1/featureinfo/somap?service=WMS&version=1.3.0"
+            + "&request=GetFeatureInfo&x=51&y=51&i=51&j=51&height=101&width=101&srs=EPSG:2056&crs=EPSG:2056"
+            + "&info_format=text%2Fxml&with_geometry=true&with_maptip=false&feature_count=40&FI_POINT_TOLERANCE=16"
+            + "&FI_LINE_TOLERANCE=8&FI_POLYGON_TOLERANCE=4"; // TODO -> config
+    private String baseUrlBigMap = "https://geo.so.ch/map/"; // TODO -> config
     
     public WgcMapBuilder() {
         Proj4.defs("EPSG:2056", "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs");
@@ -54,8 +58,8 @@ public class WgcMapBuilder {
         return this;
     }
     
-    public WgcMapBuilder setBaseWmsUrl(String baseWmsUrl) {
-        this.baseWmsUrl = baseWmsUrl; 
+    public WgcMapBuilder setBaseUrlWms(String baseUrlWms) {
+        this.baseUrlWms = baseUrlWms; 
         return this;
     }
     
@@ -108,7 +112,7 @@ public class WgcMapBuilder {
         interactionOptions.setPinchRotate(false);
         mapOptions.setInteractions(Interaction.defaults(interactionOptions));
 
-        WgcMap map = new WgcMap(mapOptions, baseWmsUrl);
+        WgcMap map = new WgcMap(mapOptions, baseUrlWms, baseUrlFeatureInfo, baseUrlBigMap);
 
         backgroundLayers.forEach((key, value) -> {      
             map.addLayer(value);
