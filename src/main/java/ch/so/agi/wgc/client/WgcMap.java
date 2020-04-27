@@ -4,6 +4,9 @@ import static elemental2.dom.DomGlobal.console;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.gwt.user.client.Window;
 
 import elemental2.dom.DomGlobal;
 import ol.MapOptions;
@@ -34,7 +37,7 @@ public class WgcMap extends ol.Map {
         this.baseUrlBigMap = baseUrlBigMap;
     }
     
-    public void changeBackgroundLayer(String id) {
+    public void setBackgroundLayer(String id) {
         Base layer = this.getMapLayerById(id);
         if (layer != null) {
             layer.setVisible(true);
@@ -74,24 +77,16 @@ public class WgcMap extends ol.Map {
         return baseUrlFeatureInfo;
     }
     
-    /*
-     * 
-     */
+    public String getBackgroundLayer() {
+        return backgroundLayer;
+    }
+    
     public List<String> getForegroundLayers() {
-//        List<String> layerList = new ArrayList<String>();
-//        ol.Collection<Base> layers = this.getLayers();
-//        for (int i = 0; i < layers.getLength(); i++) {  
-//            Base item = layers.item(i);
-//            if (item.get(BACKGROUND_LAYER_ATTR_NAME) != null && (boolean) item.get(BACKGROUND_LAYER_ATTR_NAME) == true) {
-//                // do nothing: background layer
-//            } else {
-//                if (item.getVisible()) {
-//                    layerList.add((String)item.get(ID_ATTR_NAME)); 
-//                }
-//            }
-//        }
-//        return layerList;
         return foregroundLayers;
+    }
+    
+    public List<Double> getForgroundLayerOpacities() {
+        return foregroundLayerOpacities;
     }
     
     public String createBigMapUrl() {
@@ -104,17 +99,24 @@ public class WgcMap extends ol.Map {
         for (int i=0; i < foregroundLayers.size(); i++) {
             l += foregroundLayers.get(i);
             
-            int transparency = (int) ((1.0 - foregroundLayerOpacities.get(i)) * 255.0);
+            int transparency = (int) ((1.0 - foregroundLayerOpacities.get(i)) * 100.0);
             l += "[" + String.valueOf(transparency) + "]";
             
             if (i != foregroundLayers.size()-1) {
                 l += ",";
             }
         }
-        console.log(l);
+        String urlBigMap = baseUrlBigMap + "?bl=" + bg + "&l=" + l;
         
-        baseUrlBigMap += "?bl=" + bg + "&l=" + l;
-        return baseUrlBigMap;
+        ol.Extent extent = this.getView().calculateExtent(this.getSize());
+        double easting = extent.getLowerLeftX() + (extent.getUpperRightX() - extent.getLowerLeftX()) / 2;
+        double northing = extent.getLowerLeftY() + (extent.getUpperRightY() - extent.getLowerLeftY()) / 2;        
+        urlBigMap += "&c=" + easting + "," + northing;
+        
+        int scale = (int) (this.getView().getResolution() * (357.14 / 0.1)); // TODO Validate calculation. Habe ich aus einer Liste von mir...
+        urlBigMap += "&s=" + String.valueOf(scale);
+        
+        return urlBigMap;
     }
     
     // Get Openlayers map layer by id.

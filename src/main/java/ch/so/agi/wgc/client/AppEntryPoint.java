@@ -6,6 +6,7 @@ import static org.jboss.elemento.Elements.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.dominokit.domino.ui.style.ColorScheme;
 import org.dominokit.domino.ui.themes.Theme;
@@ -21,6 +22,8 @@ import ch.so.agi.wgc.shared.ConfigResponse;
 import ch.so.agi.wgc.shared.ConfigService;
 import ch.so.agi.wgc.shared.ConfigServiceAsync;
 import elemental2.dom.DomGlobal;
+import elemental2.dom.Element;
+import ol.Coordinate;
 import ol.Map;
 import ol.MapBrowserEvent;
 import ol.MapEvent;
@@ -64,6 +67,11 @@ public class AppEntryPoint implements EntryPoint {
 
         body().add(div().id(MAP_DIV_ID));
 
+        map = new WgcMapBuilder()
+                .setMapId(MAP_DIV_ID)
+                .addBackgroundLayers(backgroundMapsConfig)
+                .build();
+
         // TODO
         // Use elemental2: DomGlobal.window.location.getSearch()
         // new URLSearchParams() not available in RC1 (?)        
@@ -79,7 +87,6 @@ public class AppEntryPoint implements EntryPoint {
         if (Window.Location.getParameter("layers") != null) {
             String layers = Window.Location.getParameter("layers").toString();
             layerList = Arrays.asList(layers.split(",", -1));
-            console.log("layers: ", layerList);
         }
         List<Double> opacityList = new ArrayList<Double>();
         if (Window.Location.getParameter("layers_opacity") != null) {
@@ -88,33 +95,25 @@ public class AppEntryPoint implements EntryPoint {
             for(int i=0; i<rawList.size(); i++) {
                 opacityList.add(Double.parseDouble(rawList.get(i)));
             }
-            console.log("opacities: ", opacityList);
+        }
+        if (Window.Location.getParameter("E") != null && Window.Location.getParameter("N") != null) {
+            double easting = Double.valueOf(Window.Location.getParameter("E"));
+            double northing = Double.valueOf(Window.Location.getParameter("N"));
+            map.getView().setCenter(new Coordinate(easting,northing));
+        }
+        if (Window.Location.getParameter("zoom") != null) {
+            map.getView().setZoom(Double.valueOf(Window.Location.getParameter("zoom")));
         }
 
-//        console.log(Window.Location.getParameterMap().toString());
-        
-        
-        
-        map = new WgcMapBuilder()
-                .setMapId(MAP_DIV_ID)
-                .addBackgroundLayers(backgroundMapsConfig)
-                .build();
-
-        map.changeBackgroundLayer(bgLayer);
+        map.setBackgroundLayer(bgLayer);
         
         for (int i=0; i<layerList.size(); i++) {
             map.addForegroundLayer(layerList.get(i), opacityList.get(i));
         }
-//
-//        layerList.forEach(l -> {
-////            console.log(l);
-//            map.addLayer(l, );
-//        });
         
-        String bigMapUrl = map.createBigMapUrl();
-        body().add(new BigMapLink(map, bigMapUrl).element());
-        
-        
+        // TODO muss upgedated werden...
+        BigMapLink bigMapLink = new BigMapLink(map);
+        body().add(bigMapLink.element());
         
         // TODO getfeatureinfo
         // - url in config
@@ -126,7 +125,7 @@ public class AppEntryPoint implements EntryPoint {
                 console.log(event.getCoordinate().toString());
                 
                 double resolution = map.getView().getResolution();
-                console.log(map.getView().getResolution());
+                //console.log(map.getView().getResolution());
 
                 // 50/51/101-Ansatz ist anscheinend bei OpenLayers normal.
                 // -> siehe baseUrlFeatureInfo resp. ein Original-Request
@@ -138,33 +137,46 @@ public class AppEntryPoint implements EntryPoint {
 
                 String baseUrlFeatureInfo = map.getBaseUrlFeatureInfo();
                 List<String> foregroundLayers = map.getForegroundLayers();
-                console.log(foregroundLayers);
+                //console.log(foregroundLayers);
                 String layers = String.join(",", foregroundLayers);
                 String urlFeatureInfo = baseUrlFeatureInfo + "&layers=" + layers;
                 urlFeatureInfo += "&query_layers=" + layers;
                 urlFeatureInfo += "&bbox=" + minX + "," + minY + "," + maxX + "," + maxY;
                 
-                console.log(urlFeatureInfo);
-                
-                
-                
-                
+                //console.log(urlFeatureInfo);
             }
         });        
-        
-        // TODO update window.location
-        // Reicht MoveEndListener?
-        map.addMapZoomEndListener(new ol.event.EventListener<MapEvent>() {
-            @Override
-            public void onEvent(MapEvent event) {
-//                console.log("addMapZoomEndListener...");
-            }
-        });
-        
+                
         map.addMoveEndListener(new ol.event.EventListener<MapEvent>() {
             @Override
             public void onEvent(MapEvent event) {
-//                console.log("addMoveEndListener...");
+                ol.View view = map.getView();
+//                console.log(view.getMaxResolution());
+//                console.log(view.getMinResolution());
+//                console.log(view.getMaxZoom());
+//                console.log(view.getMinZoom());
+//                console.log(view.getResolution());
+//                console.log(view.getZoom());
+                
+                ol.Extent extent = view.calculateExtent(map.getSize());
+                double easting = extent.getLowerLeftX() + (extent.getUpperRightX() - extent.getLowerLeftX()) / 2;
+                double northing = extent.getLowerLeftY() + (extent.getUpperRightY() - extent.getLowerLeftY()) / 2;
+                
+                String newUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost() + Window.Location.getPath();
+                newUrl += "?bgLayer=" + map.getBackgroundLayer();
+                newUrl += "&layers=" + String.join(",", map.getForegroundLayers());
+                newUrl += "&layers_opacity=" + map.getForgroundLayerOpacities().stream().map(String::valueOf).collect(Collectors.joining(","));
+                newUrl += "&E=" + String.valueOf(easting);
+                newUrl += "&N=" + String.valueOf(northing);
+                newUrl += "&zoom=" + String.valueOf(view.getZoom());
+
+
+                
+                updateURLWithoutReloading(newUrl);
+                
+                Element bigMapLinkElement = DomGlobal.document.getElementById("bigMapLink");
+                bigMapLinkElement.removeAttribute("href");
+                bigMapLinkElement.setAttribute("href", map.createBigMapUrl());
             }
         });
         
