@@ -196,7 +196,7 @@
 		                    <argument>build</argument>
 		                    <argument>.</argument>
 		                    <argument>-t</argument>
-		                    <argument>sogis/wgc-embedded:1.0.${env.TRAVIS_BUILD_NUMBER}</argument>                    
+		                    <argument>sogis/wgc-embedded:1.0.${env.BUILD_NUMBER}</argument>                    
 		                    <argument>-t</argument>
 		                    <argument>sogis/wgc-embedded:latest</argument>                    
 		                    <argument>--build-arg</argument>
