@@ -59,9 +59,7 @@ public class AppEntryPoint implements EntryPoint {
     }
 
     @SuppressWarnings("unchecked")
-    private void init() { 
-        console.log("init");
-        
+    private void init() {         
         Theme theme = new Theme(ColorScheme.WHITE);
         theme.apply();
 
@@ -122,7 +120,7 @@ public class AppEntryPoint implements EntryPoint {
         map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
             @Override
             public void onEvent(MapBrowserEvent event) {
-                console.log(event.getCoordinate().toString());
+                //console.log(event.getCoordinate().toString());
                 
                 double resolution = map.getView().getResolution();
                 //console.log(map.getView().getResolution());
@@ -151,12 +149,6 @@ public class AppEntryPoint implements EntryPoint {
             @Override
             public void onEvent(MapEvent event) {
                 ol.View view = map.getView();
-//                console.log(view.getMaxResolution());
-//                console.log(view.getMinResolution());
-//                console.log(view.getMaxZoom());
-//                console.log(view.getMinZoom());
-//                console.log(view.getResolution());
-//                console.log(view.getZoom());
                 
                 ol.Extent extent = view.calculateExtent(map.getSize());
                 double easting = extent.getLowerLeftX() + (extent.getUpperRightX() - extent.getLowerLeftX()) / 2;
@@ -170,8 +162,6 @@ public class AppEntryPoint implements EntryPoint {
                 newUrl += "&N=" + String.valueOf(northing);
                 newUrl += "&zoom=" + String.valueOf(view.getZoom());
 
-
-                
                 updateURLWithoutReloading(newUrl);
                 
                 Element bigMapLinkElement = DomGlobal.document.getElementById("bigMapLink");
