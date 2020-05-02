@@ -1,5 +1,8 @@
 # gwt-wgc
 
+## Info
+Zum jetzigen Zeitpunkt bräuchte es domino-ui nicht. Wenn ich aber bloss hal/elemento als Abhängigkeit verwende, fliegt mir die Anwendung um die Ohren. Diese Elemento verwendet eine andere elemental2-Version, die nicht mit GWT 2.8.2 kompatibel ist.
+
 ## Development
 
 First Terminal:
