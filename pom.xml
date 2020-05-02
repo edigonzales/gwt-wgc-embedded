@@ -200,7 +200,7 @@
 		                    <argument>-t</argument>
 		                    <argument>sogis/wgc-embedded:latest</argument>                    
 		                    <argument>--build-arg</argument>
-		                    <argument>JAR_FILE=target/gwt-wgc-${project.version}.jar</argument>
+		                    <argument>JAR_FILE=target/gwt-wgc-embedded-${project.version}.jar</argument>
 		                </arguments>
 		            </configuration>
 		        </execution>
