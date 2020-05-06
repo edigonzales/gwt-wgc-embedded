@@ -38,7 +38,7 @@ public class WgcMapBuilder {
     private String baseUrlWms = "https://geo.so.ch/api/wms"; // TODO -> config
     private String baseUrlFeatureInfo = "https://geo.so.ch/api/v1/featureinfo/somap?service=WMS&version=1.3.0"
             + "&request=GetFeatureInfo&x=51&y=51&i=51&j=51&height=101&width=101&srs=EPSG:2056&crs=EPSG:2056"
-            + "&info_format=text%2Fxml&with_geometry=true&with_maptip=false&feature_count=40&FI_POINT_TOLERANCE=16"
+            + "&info_format=text%2Fxml&with_geometry=true&with_maptip=false&feature_count=10&FI_POINT_TOLERANCE=16"
             + "&FI_LINE_TOLERANCE=8&FI_POLYGON_TOLERANCE=4"; // TODO -> config
     private String baseUrlBigMap = "https://geo.so.ch/map/"; // TODO -> config
     

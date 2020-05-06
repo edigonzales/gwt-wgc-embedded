@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.ColorScheme;
 import org.dominokit.domino.ui.themes.Theme;
+import org.gwtproject.safehtml.shared.SafeHtmlUtils;
 import org.jboss.elemento.HtmlContentBuilder;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -19,6 +20,9 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.Text;
 import com.google.gwt.xml.client.XMLParser;
 
 import ch.so.agi.wgc.shared.BackgroundMapConfig;
@@ -122,15 +126,9 @@ public class AppEntryPoint implements EntryPoint {
         BigMapLink bigMapLink = new BigMapLink(map);
         body().add(bigMapLink.element());
         
-        // TODO getfeatureinfo
-        // - url in config
-        // - Den Rest selber zusammenstöpseln (und berechnen).
-        // - fetch()
         map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
             @Override
-            public void onEvent(MapBrowserEvent event) {
-                //console.log(event.getCoordinate().toString());
-                
+            public void onEvent(MapBrowserEvent event) {                
                 if (popup != null) {
                    popup.remove(); 
                 }
@@ -152,7 +150,6 @@ public class AppEntryPoint implements EntryPoint {
                         .add(closeButton)
                         ); 
                 
-                popupBuilder.add(div().textContent("oooooo bar"));
                 popup = (HTMLDivElement) popupBuilder.element();
                 popup.style.position = "absolute";
                 popup.style.top = "5px";
@@ -171,7 +168,6 @@ public class AppEntryPoint implements EntryPoint {
 
                 String baseUrlFeatureInfo = map.getBaseUrlFeatureInfo();
                 List<String> foregroundLayers = map.getForegroundLayers();
-                //console.log(foregroundLayers);
                 String layers = String.join(",", foregroundLayers);
                 String urlFeatureInfo = baseUrlFeatureInfo + "&layers=" + layers;
                 urlFeatureInfo += "&query_layers=" + layers;
@@ -179,7 +175,7 @@ public class AppEntryPoint implements EntryPoint {
                 
                 RequestInit requestInit = RequestInit.create();
                 Headers headers = new Headers();
-                headers.append("Content-Type", "application/x-www-form-urlencoded"); // CORS and preflight...
+                headers.append("Content-Type", "application/x-www-form-urlencoded"); 
                 requestInit.setHeaders(headers);
                 
                 DomGlobal.fetch(urlFeatureInfo)
@@ -192,6 +188,37 @@ public class AppEntryPoint implements EntryPoint {
                 .then(xml -> {
                     Document messageDom = XMLParser.parse(xml);
                     
+                    if (messageDom.getElementsByTagName("Feature").getLength() == 0) {
+                        popup.appendChild(div().css("popupNoContent").textContent("no content...").element());
+                    }
+                    
+                    // TODO: nicht gruppieren nach Layer. Jedes Feature hat einen layerHeader.
+                    
+                    for (int i=0; i<messageDom.getElementsByTagName("Layer").getLength(); i++) {
+                        Node layerNode = messageDom.getElementsByTagName("Layer").item(i);
+                        String layerName = ((com.google.gwt.xml.client.Element) layerNode).getAttribute("layername"); 
+                        String layerTitle = ((com.google.gwt.xml.client.Element) layerNode).getAttribute("name"); 
+                        
+                        if (layerNode.getChildNodes().getLength() == 0) {
+                            continue;
+                        };
+                        
+                        popup.appendChild(div().css("popupLayerHeader").textContent(layerTitle).element());
+                        
+//                        NodeList featureNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("Feature");
+//                        for (int j=0; j<featureNodes.getLength(); j++) {
+//                            Node featureNode = featureNodes.item(j);
+//                            String foo = ((com.google.gwt.xml.client.Element) featureNode).getTagName();
+//                            console.log(foo);
+//                        }
+                        
+                        // TODO: rename featureNodes
+                        NodeList featureNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("HtmlContent");
+                        for (int j=0; j<featureNodes.getLength(); j++) {
+                            Text featureNode = (Text) featureNodes.item(j).getFirstChild();                            
+                            popup.appendChild(div().innerHtml(SafeHtmlUtils.fromTrustedString(featureNode.getData())).element());
+                        }                        
+                    }
                     return null;
                 })
                 .catch_(error -> {
@@ -199,14 +226,7 @@ public class AppEntryPoint implements EntryPoint {
                     return null;
                 });
 
-                
-                
-                
-                
                 body().add(popup);
-                
-                
-                console.log(urlFeatureInfo);
             }
         });        
                 
