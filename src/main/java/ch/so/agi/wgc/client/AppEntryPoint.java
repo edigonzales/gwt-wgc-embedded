@@ -146,7 +146,7 @@ public class AppEntryPoint implements EntryPoint {
                 HtmlContentBuilder popupBuilder = div().id("popup");
                 popupBuilder.add(
                         div().id("popupHeader")
-                        .add(span().id("popupHeaderTextSpan").textContent("Objekt-Information"))
+                        .add(span().id("popupHeaderTextSpan").textContent("Objektinformation"))
                         .add(closeButton)
                         ); 
                 
