@@ -8,14 +8,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.style.ColorScheme;
 import org.dominokit.domino.ui.themes.Theme;
+import org.jboss.elemento.HtmlContentBuilder;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.XMLParser;
 
 import ch.so.agi.wgc.shared.BackgroundMapConfig;
 import ch.so.agi.wgc.shared.ConfigResponse;
@@ -23,6 +27,11 @@ import ch.so.agi.wgc.shared.ConfigService;
 import ch.so.agi.wgc.shared.ConfigServiceAsync;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
+import elemental2.dom.EventListener;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import elemental2.dom.Headers;
+import elemental2.dom.RequestInit;
 import ol.Coordinate;
 import ol.Map;
 import ol.MapBrowserEvent;
@@ -41,6 +50,7 @@ public class AppEntryPoint implements EntryPoint {
     private String MAP_DIV_ID = "map";
 
     private WgcMap map;
+    HTMLDivElement popup;
     
     public void onModuleLoad() {
         configService.configServer(new AsyncCallback<ConfigResponse>() {
@@ -109,7 +119,6 @@ public class AppEntryPoint implements EntryPoint {
             map.addForegroundLayer(layerList.get(i), opacityList.get(i));
         }
         
-        // TODO muss upgedated werden...
         BigMapLink bigMapLink = new BigMapLink(map);
         body().add(bigMapLink.element());
         
@@ -121,6 +130,33 @@ public class AppEntryPoint implements EntryPoint {
             @Override
             public void onEvent(MapBrowserEvent event) {
                 //console.log(event.getCoordinate().toString());
+                
+                if (popup != null) {
+                   popup.remove(); 
+                }
+                
+                HTMLElement icon = Icons.ALL.close_mdi().element();
+                icon.style.verticalAlign = "middle";
+                icon.addEventListener("click", new EventListener() {
+                    @Override
+                    public void handleEvent(elemental2.dom.Event evt) {
+                        popup.remove();
+                    }
+                });
+                
+                HTMLElement closeButton = span().id("popupHeaderButtonSpan").add(icon).element();                    
+                HtmlContentBuilder popupBuilder = div().id("popup");
+                popupBuilder.add(
+                        div().id("popupHeader")
+                        .add(span().id("popupHeaderTextSpan").textContent("Objekt-Information"))
+                        .add(closeButton)
+                        ); 
+                
+                popupBuilder.add(div().textContent("oooooo bar"));
+                popup = (HTMLDivElement) popupBuilder.element();
+                popup.style.position = "absolute";
+                popup.style.top = "5px";
+                popup.style.left = "5px";
                 
                 double resolution = map.getView().getResolution();
                 //console.log(map.getView().getResolution());
@@ -141,7 +177,36 @@ public class AppEntryPoint implements EntryPoint {
                 urlFeatureInfo += "&query_layers=" + layers;
                 urlFeatureInfo += "&bbox=" + minX + "," + minY + "," + maxX + "," + maxY;
                 
-                //console.log(urlFeatureInfo);
+                RequestInit requestInit = RequestInit.create();
+                Headers headers = new Headers();
+                headers.append("Content-Type", "application/x-www-form-urlencoded"); // CORS and preflight...
+                requestInit.setHeaders(headers);
+                
+                DomGlobal.fetch(urlFeatureInfo)
+                .then(response -> {
+                    if (!response.ok) {
+                        return null;
+                    }
+                    return response.text();
+                })
+                .then(xml -> {
+                    Document messageDom = XMLParser.parse(xml);
+                    
+                    return null;
+                })
+                .catch_(error -> {
+                    console.log(error);
+                    return null;
+                });
+
+                
+                
+                
+                
+                body().add(popup);
+                
+                
+                console.log(urlFeatureInfo);
             }
         });        
                 
