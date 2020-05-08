@@ -104,6 +104,49 @@ a.bigMapLink:visited {
     vertical-align: middle;  
 }
 
+.popupNoContent {
+	padding: 10px;
+}
+
+.popupContent {
+	padding: 10px;
+}
+
+table.attribute-list {
+	width: 100%;
+}
+
+table.attribute-list td {
+	overflow: hidden;
+    vertical-align: top;
+    text-overflow: ellipsis;
+}
+
+td.identify-attr-title {
+    padding-right: 10px;
+    min-width: 10ch;
+    width: 40%;
+    padding-right: 1em;
+}
+
+td.identify-attr-value {
+    max-width: 0;
+    width: 60%;
+}
+
+a {
+    cursor: pointer;
+    color: #e53935;
+    text-decoration: none;
+}
+
+a:hover {
+    cursor: pointer;
+    color: #e53935;
+    text-decoration: underline;
+}
+
+
 
 
 

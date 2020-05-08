@@ -2,13 +2,17 @@ package ch.so.agi.wgc.client;
 
 import static elemental2.dom.DomGlobal.console;
 import static org.jboss.elemento.Elements.*;
+import static org.dominokit.domino.ui.style.Unit.px;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.button.ButtonSize;
 import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.style.ColorScheme;
 import org.dominokit.domino.ui.themes.Theme;
 import org.gwtproject.safehtml.shared.SafeHtmlUtils;
@@ -173,6 +177,8 @@ public class AppEntryPoint implements EntryPoint {
                 urlFeatureInfo += "&query_layers=" + layers;
                 urlFeatureInfo += "&bbox=" + minX + "," + minY + "," + maxX + "," + maxY;
                 
+                console.log(urlFeatureInfo);
+                
                 RequestInit requestInit = RequestInit.create();
                 Headers headers = new Headers();
                 headers.append("Content-Type", "application/x-www-form-urlencoded"); 
@@ -189,7 +195,7 @@ public class AppEntryPoint implements EntryPoint {
                     Document messageDom = XMLParser.parse(xml);
                     
                     if (messageDom.getElementsByTagName("Feature").getLength() == 0) {
-                        popup.appendChild(div().css("popupNoContent").textContent("no content...").element());
+                        popup.appendChild(div().css("popupNoContent").textContent("Keine weiteren Informationen").element());
                     }
                     
                     // TODO: nicht gruppieren nach Layer. Jedes Feature hat einen layerHeader.
@@ -203,7 +209,7 @@ public class AppEntryPoint implements EntryPoint {
                             continue;
                         };
                         
-                        popup.appendChild(div().css("popupLayerHeader").textContent(layerTitle).element());
+//                        popup.appendChild(div().css("popupLayerHeader").textContent(layerTitle).element());
                         
 //                        NodeList featureNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("Feature");
 //                        for (int j=0; j<featureNodes.getLength(); j++) {
@@ -213,10 +219,50 @@ public class AppEntryPoint implements EntryPoint {
 //                        }
                         
                         // TODO: rename featureNodes
-                        NodeList featureNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("HtmlContent");
-                        for (int j=0; j<featureNodes.getLength(); j++) {
-                            Text featureNode = (Text) featureNodes.item(j).getFirstChild();                            
-                            popup.appendChild(div().innerHtml(SafeHtmlUtils.fromTrustedString(featureNode.getData())).element());
+                        NodeList htmlNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("HtmlContent");
+                        for (int j=0; j<htmlNodes.getLength(); j++) {
+                                                        
+                            Text htmlNode = (Text) htmlNodes.item(j).getFirstChild();   
+                            popup.appendChild(div().css("popupLayerHeader").textContent(layerTitle).element());     
+                            
+                            HtmlContentBuilder popupContentBuilder = div().css("popupContent");
+                            
+                            HTMLDivElement featureInfoHtml = div().innerHtml(SafeHtmlUtils.fromTrustedString(htmlNode.getData())).element();
+                            popupContentBuilder.add(featureInfoHtml);
+
+                            com.google.gwt.xml.client.Element layerElement = ((com.google.gwt.xml.client.Element) layerNode);
+                            if (layerElement.getAttribute("featurereport") != null) {
+                                String baseUrlReport = "https://geo.so.ch/api/v1/document/"; // TODO: Config
+                                
+                                double x = event.getCoordinate().getX();
+                                double y = event.getCoordinate().getY();
+                                
+                                com.google.gwt.xml.client.Element featureNode = ((com.google.gwt.xml.client.Element) htmlNodes.item(j).getParentNode());
+                                String featureId = featureNode.getAttribute("id");
+                                
+                                String urlReport = baseUrlReport + layerElement.getAttribute("featurereport") + "?feature=" + featureId +
+                                        "&x=" + String.valueOf(x) + "&y=" + String.valueOf(y) + "&crs=EPSG%3A2056";                                
+                                
+                                Button pdfBtn = Button.create(Icons.ALL.file_pdf_box_outline_mdi())
+                                        .setSize(ButtonSize.SMALL)
+                                        .setContent("Objektblatt")
+//                                        .setBackground(Color.LIGHT_BLUE)
+                                        .setBackground(Color.WHITE)
+                                        .elevate(0)
+                                        .style()
+                                        .setColor("#e53935")
+                                        .setBorder("1px #e53935 solid")
+                                        .setPadding("5px 5px 5px 0px;")
+                                        .setMinWidth(px.of(100)).get();
+                                
+                                pdfBtn.addClickListener(evt -> {
+                                    Window.open(urlReport, "_blank", null);
+                                });
+                                
+                                popupContentBuilder.add(div().style("padding-top: 5px;").element());
+                                popupContentBuilder.add(pdfBtn);
+                            }
+                            popup.appendChild(popupContentBuilder.element());
                         }                        
                     }
                     return null;
