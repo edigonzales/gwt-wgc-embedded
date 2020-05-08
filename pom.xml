@@ -64,6 +64,14 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
       <version>${gwtVersion}</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>            
+            
+        </exclusion>
+    </exclusions>
+      
     </dependency>
 
 <dependency>
