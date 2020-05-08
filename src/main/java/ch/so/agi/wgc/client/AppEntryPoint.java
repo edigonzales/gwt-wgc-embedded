@@ -176,9 +176,7 @@ public class AppEntryPoint implements EntryPoint {
                 String urlFeatureInfo = baseUrlFeatureInfo + "&layers=" + layers;
                 urlFeatureInfo += "&query_layers=" + layers;
                 urlFeatureInfo += "&bbox=" + minX + "," + minY + "," + maxX + "," + maxY;
-                
-                console.log(urlFeatureInfo);
-                
+                                
                 RequestInit requestInit = RequestInit.create();
                 Headers headers = new Headers();
                 headers.append("Content-Type", "application/x-www-form-urlencoded"); 

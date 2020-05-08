@@ -33,7 +33,16 @@ docker run -p 8080:8080 sogis/wgc-embedded
 
 ## Varia
 
+- http://localhost:8080/?bgLayer=ch.so.agi.hintergrundkarte_sw&layers=ch.so.afu.erdwaermesonden.abfrageperimeter,ch.so.afu.gewaesserschutz.zonen_areale,ch.so.afu.altlasten.standorte&layers_opacity=0.35,0.5,0.6
+
+
 - http://localhost:8080/?bgLayer=ch.so.agi.hintergrundkarte_ortho&layers=ch.so.afu.bodeninformationen.lw.verdichtungsempfindlichkeit,ch.so.agi.av.grundstuecke,ch.so.agi.av.fixpunkte,ch.so.afu.erdwaermesonden.abfrageperimeter&layers_opacity=0.75,1,1,0.75&E=2604733.64453125&N=1226618.505859375&zoom=12
+
+- http://localhost:8080/?bgLayer=ch.so.agi.hintergrundkarte_sw&layers=ch.so.afu.erdwaermesonden.abfrageperimeter&layers_opacity=1&E=2603960.3211802277&N=1226316.069902117&zoom=12
+
+
+- https://geo.so.ch/map/?bl=hintergrundkarte_sw&l=ch.so.afu.erdwaermesonden.abfrageperimeter%5B65%5D%2Cch.so.afu.gewaesserschutz.zonen_areale%5B50%5D%2Cch.so.afu.altlasten.standorte%5B40%5D%2Cch.so.afu.fliessgewaesser.netz!&c=2606533%2C1227956&s=2000&t=default
+
 
 - https://geo.so.ch/api/dataproduct/v1/weblayers?filter=ch.so.agi.av.grundstuecke
 
