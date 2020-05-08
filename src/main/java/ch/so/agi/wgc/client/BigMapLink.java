@@ -18,7 +18,8 @@ public class BigMapLink implements IsElement<HTMLElement>, Attachable {
     
     public BigMapLink(WgcMap map) {
         Location location = DomGlobal.window.location;
-        String imageUrl = location.getProtocol() + "//" + location.getHost() + location.getPathname() + "favicon.ico";
+//        String imageUrl = location.getProtocol() + "//" + location.getHost() + location.getPathname() + "favicon.ico";
+        String imageUrl = "favicon.ico";
         root = a().id("bigMapLink").css("bigMapLink").attr("href", map.createBigMapUrl()).attr("target", "_blank").add(div().add(img().attr("src", imageUrl)).add(span().style("margin-left: 5px;")).add(span().textContent("View on geo.so.ch/map"))).element();
     }
     
