@@ -127,9 +127,11 @@ public class AppEntryPoint implements EntryPoint {
             map.addForegroundLayer(layerList.get(i), opacityList.get(i));
         }
         
+        // TODO Text konfigurierbar (auch i18n)
         BigMapLink bigMapLink = new BigMapLink(map);
         body().add(bigMapLink.element());
         
+        // TODO -> Popup Element
         map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
             @Override
             public void onEvent(MapBrowserEvent event) {                
@@ -160,7 +162,6 @@ public class AppEntryPoint implements EntryPoint {
                 popup.style.left = "5px";
                 
                 double resolution = map.getView().getResolution();
-                //console.log(map.getView().getResolution());
 
                 // 50/51/101-Ansatz ist anscheinend bei OpenLayers normal.
                 // -> siehe baseUrlFeatureInfo resp. ein Original-Request
@@ -209,16 +210,6 @@ public class AppEntryPoint implements EntryPoint {
                             continue;
                         };
                         
-//                        popup.appendChild(div().css("popupLayerHeader").textContent(layerTitle).element());
-                        
-//                        NodeList featureNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("Feature");
-//                        for (int j=0; j<featureNodes.getLength(); j++) {
-//                            Node featureNode = featureNodes.item(j);
-//                            String foo = ((com.google.gwt.xml.client.Element) featureNode).getTagName();
-//                            console.log(foo);
-//                        }
-                        
-                        // TODO: rename featureNodes
                         NodeList htmlNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("HtmlContent");
                         for (int j=0; j<htmlNodes.getLength(); j++) {
                                                         
@@ -246,7 +237,6 @@ public class AppEntryPoint implements EntryPoint {
                                 Button pdfBtn = Button.create(Icons.ALL.file_pdf_box_outline_mdi())
                                         .setSize(ButtonSize.SMALL)
                                         .setContent("Objektblatt")
-//                                        .setBackground(Color.LIGHT_BLUE)
                                         .setBackground(Color.WHITE)
                                         .elevate(0)
                                         .style()

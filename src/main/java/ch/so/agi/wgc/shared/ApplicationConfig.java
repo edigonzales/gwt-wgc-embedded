@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+// TODO move to server package?
+
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "app")
