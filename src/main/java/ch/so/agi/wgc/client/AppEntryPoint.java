@@ -198,9 +198,7 @@ public class AppEntryPoint implements EntryPoint {
                     if (messageDom.getElementsByTagName("Feature").getLength() == 0) {
                         popup.appendChild(div().css("popupNoContent").textContent("Keine weiteren Informationen").element());
                     }
-                    
-                    // TODO: nicht gruppieren nach Layer. Jedes Feature hat einen layerHeader.
-                    
+                                        
                     for (int i=0; i<messageDom.getElementsByTagName("Layer").getLength(); i++) {
                         Node layerNode = messageDom.getElementsByTagName("Layer").item(i);
                         String layerName = ((com.google.gwt.xml.client.Element) layerNode).getAttribute("layername"); 
