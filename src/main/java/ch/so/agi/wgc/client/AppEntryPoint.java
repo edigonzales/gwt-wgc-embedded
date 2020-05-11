@@ -127,7 +127,6 @@ public class AppEntryPoint implements EntryPoint {
             map.addForegroundLayer(layerList.get(i), opacityList.get(i));
         }
         
-        // TODO Text konfigurierbar (auch i18n)
         BigMapLink bigMapLink = new BigMapLink(map, "In geo.so.ch/map ansehen");
         body().add(bigMapLink.element());
         
