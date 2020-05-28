@@ -50,7 +50,11 @@ public class AppEntryPoint implements EntryPoint {
     private MyMessages messages = GWT.create(MyMessages.class);
     private final ConfigServiceAsync configService = GWT.create(ConfigService.class);
     
+    // Settings
     private List<BackgroundMapConfig> backgroundMapsConfig;
+    private String baseUrlWms;
+    private String baseUrlFeatureInfo;
+    private String baseUrlBigMap;
     
     private NumberFormat fmtDefault = NumberFormat.getDecimalFormat();
     private NumberFormat fmtPercent = NumberFormat.getFormat("#0.0");
@@ -70,7 +74,10 @@ public class AppEntryPoint implements EntryPoint {
 
             @Override
             public void onSuccess(ConfigResponse result) {
-                backgroundMapsConfig = result.getBackgroundMaps();                
+                backgroundMapsConfig = result.getBackgroundMaps(); 
+                baseUrlWms = result.getBaseUrlWms();
+                baseUrlFeatureInfo = result.getBaseUrlFeatureInfo();
+                baseUrlBigMap = result.getBaseUrlBigMap();
                 init();
             }
         });
@@ -85,6 +92,9 @@ public class AppEntryPoint implements EntryPoint {
 
         map = new WgcMapBuilder()
                 .setMapId(MAP_DIV_ID)
+                .setBaseUrlWms(baseUrlWms)
+                .setBaseUrlFeatureInfo(baseUrlFeatureInfo)
+                .setBaseUrlBigMap(baseUrlBigMap)
                 .addBackgroundLayers(backgroundMapsConfig)
                 .build();
 

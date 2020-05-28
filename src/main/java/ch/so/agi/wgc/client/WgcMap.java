@@ -18,8 +18,6 @@ import ol.source.ImageWmsOptions;
 import ol.source.ImageWmsParams;
 
 public class WgcMap extends ol.Map {
-    private String BACKGROUND_LAYER_ATTR_NAME = "bgLayer";
-    private String TITLE_ATTR_NAME = "title";
     private String ID_ATTR_NAME = "id";
 
     private String baseUrlWms;

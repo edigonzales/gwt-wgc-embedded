@@ -13,7 +13,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import ch.so.agi.wgc.shared.ApplicationConfig;
 import ch.so.agi.wgc.shared.BackgroundMapConfig;
 import ch.so.agi.wgc.shared.ConfigResponse;
 import ch.so.agi.wgc.shared.ConfigService;
@@ -33,6 +32,9 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     @Override
     public ConfigResponse configServer() throws IllegalArgumentException, IOException {
         ConfigResponse response = new ConfigResponse();
+        response.setBaseUrlWms(config.getBaseUrlWms());
+        response.setBaseUrlFeatureInfo(config.getBaseUrlFeatureInfo());
+        response.setBaseUrlBigMap(config.getBaseUrlBigMap());
         response.setBackgroundMaps(config.getBackgroundMaps());
         return response;
     }
