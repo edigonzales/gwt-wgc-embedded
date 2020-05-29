@@ -55,6 +55,7 @@ public class AppEntryPoint implements EntryPoint {
     private String baseUrlWms;
     private String baseUrlFeatureInfo;
     private String baseUrlBigMap;
+    private String baseUrlReport;
     
     private NumberFormat fmtDefault = NumberFormat.getDecimalFormat();
     private NumberFormat fmtPercent = NumberFormat.getFormat("#0.0");
@@ -78,6 +79,7 @@ public class AppEntryPoint implements EntryPoint {
                 baseUrlWms = result.getBaseUrlWms();
                 baseUrlFeatureInfo = result.getBaseUrlFeatureInfo();
                 baseUrlBigMap = result.getBaseUrlBigMap();
+                baseUrlReport = result.getBaseUrlReport();
                 init();
             }
         });
@@ -229,9 +231,7 @@ public class AppEntryPoint implements EntryPoint {
                             popupContentBuilder.add(featureInfoHtml);
 
                             com.google.gwt.xml.client.Element layerElement = ((com.google.gwt.xml.client.Element) layerNode);
-                            if (layerElement.getAttribute("featurereport") != null) {
-                                String baseUrlReport = "https://geo.so.ch/api/v1/document/"; // TODO: Config
-                                
+                            if (layerElement.getAttribute("featurereport") != null) {                                
                                 double x = event.getCoordinate().getX();
                                 double y = event.getCoordinate().getY();
                                 

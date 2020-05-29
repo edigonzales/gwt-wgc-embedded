@@ -35,12 +35,9 @@ public class WgcMapBuilder {
     private Projection projection;
     private String mapId;
     private HashMap<String, Tile> backgroundLayers = new HashMap<String, Tile>();
-    private String baseUrlWms = "https://geo.so.ch/api/wms"; 
-    private String baseUrlFeatureInfo = "https://geo.so.ch/api/v1/featureinfo/somap?service=WMS&version=1.3.0"
-            + "&request=GetFeatureInfo&x=51&y=51&i=51&j=51&height=101&width=101&srs=EPSG:2056&crs=EPSG:2056"
-            + "&info_format=text%2Fxml&with_geometry=true&with_maptip=false&feature_count=10&FI_POINT_TOLERANCE=8"
-            + "&FI_LINE_TOLERANCE=8&FI_POLYGON_TOLERANCE=4"; 
-    private String baseUrlBigMap = "https://geo.so.ch/map/"; // TODO delete "default"?!
+    private String baseUrlWms; 
+    private String baseUrlFeatureInfo; 
+    private String baseUrlBigMap;
     
     public WgcMapBuilder() {
         Proj4.defs("EPSG:2056", "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs");

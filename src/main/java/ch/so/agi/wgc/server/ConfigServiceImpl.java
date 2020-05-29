@@ -35,6 +35,7 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
         response.setBaseUrlWms(config.getBaseUrlWms());
         response.setBaseUrlFeatureInfo(config.getBaseUrlFeatureInfo());
         response.setBaseUrlBigMap(config.getBaseUrlBigMap());
+        response.setBaseUrlReport(config.getBaseUrlReport());
         response.setBackgroundMaps(config.getBackgroundMaps());
         return response;
     }

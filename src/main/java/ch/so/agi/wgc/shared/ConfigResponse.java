@@ -12,6 +12,8 @@ public class ConfigResponse implements IsSerializable {
     
     private String baseUrlBigMap;
     
+    private String baseUrlReport;
+    
     public List<BackgroundMapConfig> getBackgroundMaps() {
         return backgroundMaps;
     }
@@ -42,5 +44,13 @@ public class ConfigResponse implements IsSerializable {
 
     public void setBaseUrlBigMap(String baseUrlBigMap) {
         this.baseUrlBigMap = baseUrlBigMap;
+    }
+
+    public String getBaseUrlReport() {
+        return baseUrlReport;
+    }
+
+    public void setBaseUrlReport(String baseUrlReport) {
+        this.baseUrlReport = baseUrlReport;
     }
 }

@@ -23,6 +23,9 @@ public class ApplicationConfig implements IsSerializable {
     
     private String baseUrlBigMap;
     
+    private String baseUrlReport;
+
+    
     public ApplicationConfig() {}
 
     public List<BackgroundMapConfig> getBackgroundMaps() {
@@ -55,5 +58,13 @@ public class ApplicationConfig implements IsSerializable {
 
     public void setBaseUrlBigMap(String baseUrlBigMap) {
         this.baseUrlBigMap = baseUrlBigMap;
+    }
+
+    public String getBaseUrlReport() {
+        return baseUrlReport;
+    }
+
+    public void setBaseUrlReport(String baseUrlReport) {
+        this.baseUrlReport = baseUrlReport;
     }
 }
