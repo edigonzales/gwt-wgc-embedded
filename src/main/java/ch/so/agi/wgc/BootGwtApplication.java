@@ -18,10 +18,10 @@ public class BootGwtApplication {
 		SpringApplication.run(BootGwtApplication.class, args);
 	}
 	
-    @Bean
-    public ForwardedHeaderFilter forwardedHeaderFilter() {
-        return new ForwardedHeaderFilter();
-    }
+//    @Bean
+//    public ForwardedHeaderFilter forwardedHeaderFilter() {
+//        return new ForwardedHeaderFilter();
+//    }
 	
     @Bean
     public ServletRegistrationBean configServletBean() {
