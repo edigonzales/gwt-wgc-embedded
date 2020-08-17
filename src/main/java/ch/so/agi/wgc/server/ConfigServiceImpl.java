@@ -50,5 +50,10 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
         response.setBackgroundMaps(config.getBackgroundMaps());
         return response;
     }
+    
+    @Override
+    protected void checkPermutationStrongName() {
+    //http://www.gwtproject.org/javadoc/latest/com/google/gwt/user/server/rpc/RemoteServiceServlet.html    
+    }
 
 }
