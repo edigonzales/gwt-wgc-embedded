@@ -2,9 +2,11 @@ package ch.so.agi.wgc.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,9 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private ApplicationConfig config;
 
     @Override
@@ -31,6 +36,12 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     
     @Override
     public ConfigResponse configServer() throws IllegalArgumentException, IOException {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        for (Enumeration<String> headerName = headerNames; headerName.hasMoreElements();) {
+            String header = headerName.nextElement();
+            System.out.println(header + " : " + request.getHeader(header));  
+        }
+
         ConfigResponse response = new ConfigResponse();
         response.setBaseUrlWms(config.getBaseUrlWms());
         response.setBaseUrlFeatureInfo(config.getBaseUrlFeatureInfo());
