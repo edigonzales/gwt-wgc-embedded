@@ -51,9 +51,10 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
         return response;
     }
     
-    @Override
-    protected void checkPermutationStrongName() {
-    //http://www.gwtproject.org/javadoc/latest/com/google/gwt/user/server/rpc/RemoteServiceServlet.html    
-    }
+//    @Override
+//    protected void checkPermutationStrongName() throws SecurityException {
+//        return;
+//        //http://www.gwtproject.org/javadoc/latest/com/google/gwt/user/server/rpc/RemoteServiceServlet.html    
+//    }
 
 }
