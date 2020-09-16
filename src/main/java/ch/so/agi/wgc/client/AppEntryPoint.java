@@ -51,7 +51,7 @@ public class AppEntryPoint implements EntryPoint {
     private final ConfigServiceAsync configService = GWT.create(ConfigService.class);
     
     // Settings
-    private List<BackgroundMapConfig> backgroundMapsConfig;
+    private List<BackgroundMapConfig> backgroundMaps;
     private String baseUrlWms;
     private String baseUrlFeatureInfo;
     private String baseUrlBigMap;
@@ -63,7 +63,7 @@ public class AppEntryPoint implements EntryPoint {
     private String MAP_DIV_ID = "map";
 
     private WgcMap map;
-    HTMLDivElement popup;
+    HTMLElement popup;
     
     public void onModuleLoad() {
         configService.configServer(new AsyncCallback<ConfigResponse>() {
@@ -74,12 +74,12 @@ public class AppEntryPoint implements EntryPoint {
             }
 
             @Override
-            public void onSuccess(ConfigResponse result) {
-                backgroundMapsConfig = result.getBackgroundMaps(); 
-                baseUrlWms = result.getBaseUrlWms();
-                baseUrlFeatureInfo = result.getBaseUrlFeatureInfo();
-                baseUrlBigMap = result.getBaseUrlBigMap();
-                baseUrlReport = result.getBaseUrlReport();
+            public void onSuccess(ConfigResponse config) {
+                backgroundMaps = config.getBackgroundMaps(); 
+                baseUrlWms = config.getBaseUrlWms();
+                baseUrlFeatureInfo = config.getBaseUrlFeatureInfo();
+                baseUrlBigMap = config.getBaseUrlBigMap();
+                baseUrlReport = config.getBaseUrlReport();
                 init();
             }
         });
@@ -96,20 +96,14 @@ public class AppEntryPoint implements EntryPoint {
                 .setMapId(MAP_DIV_ID)
                 .setBaseUrlWms(baseUrlWms)
                 .setBaseUrlFeatureInfo(baseUrlFeatureInfo)
+                .setBaseUrlReport(baseUrlReport)
                 .setBaseUrlBigMap(baseUrlBigMap)
-                .addBackgroundLayers(backgroundMapsConfig)
+                .addBackgroundLayers(backgroundMaps)
                 .build();
 
-        // TODO
-        // Use elemental2: DomGlobal.window.location.getSearch()
-        // new URLSearchParams() not available in RC1 (?)        
-        String bgLayer = "";
+        String bgLayer = null;
         if (Window.Location.getParameter("bgLayer") != null) {
             bgLayer = Window.Location.getParameter("bgLayer").toString();
-        } else {
-            DomGlobal.window.alert("bgLayer missing");
-            console.error("bgLayer missing");
-            return;
         }
         List<String> layerList = new ArrayList<String>();
         if (Window.Location.getParameter("layers") != null) {
@@ -124,6 +118,8 @@ public class AppEntryPoint implements EntryPoint {
                 opacityList.add(Double.parseDouble(rawList.get(i)));
             }
         }
+        // TODO: falls nicht vorhanden eine Liste mit 1.
+
         if (Window.Location.getParameter("E") != null && Window.Location.getParameter("N") != null) {
             double easting = Double.valueOf(Window.Location.getParameter("E"));
             double northing = Double.valueOf(Window.Location.getParameter("N"));
@@ -133,7 +129,9 @@ public class AppEntryPoint implements EntryPoint {
             map.getView().setZoom(Double.valueOf(Window.Location.getParameter("zoom")));
         }
 
-        map.setBackgroundLayer(bgLayer);
+        if (bgLayer != null) {
+            map.setBackgroundLayer(bgLayer);
+        }
         
         for (int i=0; i<layerList.size(); i++) {
             map.addForegroundLayer(layerList.get(i), opacityList.get(i));
@@ -142,133 +140,13 @@ public class AppEntryPoint implements EntryPoint {
         BigMapLink bigMapLink = new BigMapLink(map, "In geo.so.ch/map ansehen");
         body().add(bigMapLink.element());
         
-        // TODO -> Popup Element
         map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
             @Override
             public void onEvent(MapBrowserEvent event) {                
                 if (popup != null) {
                    popup.remove(); 
                 }
-                
-                HTMLElement icon = Icons.ALL.close_mdi().element();
-                icon.style.verticalAlign = "middle";
-                icon.addEventListener("click", new EventListener() {
-                    @Override
-                    public void handleEvent(elemental2.dom.Event evt) {
-                        popup.remove();
-                    }
-                });
-                
-                HTMLElement closeButton = span().id("popupHeaderButtonSpan").add(icon).element();                    
-                HtmlContentBuilder popupBuilder = div().id("popup");
-                popupBuilder.add(
-                        div().id("popupHeader")
-                        .add(span().id("popupHeaderTextSpan").textContent("Objektinformation"))
-                        .add(closeButton)
-                        ); 
-                
-                popup = (HTMLDivElement) popupBuilder.element();
-                popup.style.position = "absolute";
-                popup.style.top = "5px";
-                popup.style.left = "5px";
-                
-                double resolution = map.getView().getResolution();
-
-                // 50/51/101-Ansatz ist anscheinend bei OpenLayers normal.
-                // -> siehe baseUrlFeatureInfo resp. ein Original-Request
-                // im Web GIS Client.
-                double minX = event.getCoordinate().getX() - 50 * resolution;
-                double maxX = event.getCoordinate().getX() + 51 * resolution;
-                double minY = event.getCoordinate().getY() - 50 * resolution;
-                double maxY = event.getCoordinate().getY() + 51 * resolution;
-
-                String baseUrlFeatureInfo = map.getBaseUrlFeatureInfo();
-                List<String> foregroundLayers = map.getForegroundLayers();
-                String layers = String.join(",", foregroundLayers);
-                String urlFeatureInfo = baseUrlFeatureInfo + "&layers=" + layers;
-                urlFeatureInfo += "&query_layers=" + layers;
-                urlFeatureInfo += "&bbox=" + minX + "," + minY + "," + maxX + "," + maxY;
-                
-//                console.log(urlFeatureInfo);
-                
-                RequestInit requestInit = RequestInit.create();
-                Headers headers = new Headers();
-                headers.append("Content-Type", "application/x-www-form-urlencoded"); 
-                requestInit.setHeaders(headers);
-                
-                DomGlobal.fetch(urlFeatureInfo)
-                .then(response -> {
-                    if (!response.ok) {
-                        return null;
-                    }
-                    return response.text();
-                })
-                .then(xml -> {
-                    Document messageDom = XMLParser.parse(xml);
-                    
-                    if (messageDom.getElementsByTagName("Feature").getLength() == 0) {
-                        popup.appendChild(div().css("popupNoContent").textContent("Keine weiteren Informationen").element());
-                    }
-                                        
-                    for (int i=0; i<messageDom.getElementsByTagName("Layer").getLength(); i++) {
-                        Node layerNode = messageDom.getElementsByTagName("Layer").item(i);
-                        String layerName = ((com.google.gwt.xml.client.Element) layerNode).getAttribute("layername"); 
-                        String layerTitle = ((com.google.gwt.xml.client.Element) layerNode).getAttribute("name"); 
-                        
-                        if (layerNode.getChildNodes().getLength() == 0) {
-                            continue;
-                        };
-                        
-                        NodeList htmlNodes = ((com.google.gwt.xml.client.Element) layerNode).getElementsByTagName("HtmlContent");
-                        for (int j=0; j<htmlNodes.getLength(); j++) {
-                                                        
-                            Text htmlNode = (Text) htmlNodes.item(j).getFirstChild();   
-                            popup.appendChild(div().css("popupLayerHeader").textContent(layerTitle).element());     
-                            
-                            HtmlContentBuilder popupContentBuilder = div().css("popupContent");
-                            
-                            HTMLDivElement featureInfoHtml = div().innerHtml(SafeHtmlUtils.fromTrustedString(htmlNode.getData())).element();
-                            popupContentBuilder.add(featureInfoHtml);
-
-                            com.google.gwt.xml.client.Element layerElement = ((com.google.gwt.xml.client.Element) layerNode);
-                            if (layerElement.getAttribute("featurereport") != null) {                                
-                                double x = event.getCoordinate().getX();
-                                double y = event.getCoordinate().getY();
-                                
-                                com.google.gwt.xml.client.Element featureNode = ((com.google.gwt.xml.client.Element) htmlNodes.item(j).getParentNode());
-                                String featureId = featureNode.getAttribute("id");
-                                
-                                String urlReport = baseUrlReport + layerElement.getAttribute("featurereport") + "?feature=" + featureId +
-                                        "&x=" + String.valueOf(x) + "&y=" + String.valueOf(y) + "&crs=EPSG%3A2056";                                
-                                
-                                Button pdfBtn = Button.create(Icons.ALL.file_pdf_box_outline_mdi())
-                                        .setSize(ButtonSize.SMALL)
-                                        .setContent("Objektblatt")
-                                        .setBackground(Color.WHITE)
-                                        .elevate(0)
-                                        .style()
-                                        .setColor("#e53935")
-                                        .setBorder("1px #e53935 solid")
-                                        .setPadding("5px 5px 5px 0px;")
-                                        .setMinWidth(px.of(100)).get();
-                                
-                                pdfBtn.addClickListener(evt -> {
-                                    Window.open(urlReport, "_blank", null);
-                                });
-                                
-                                popupContentBuilder.add(div().style("padding-top: 5px;").element());
-                                popupContentBuilder.add(pdfBtn);
-                            }
-                            popup.appendChild(popupContentBuilder.element());
-                        }                        
-                    }
-                    return null;
-                })
-                .catch_(error -> {
-                    console.log(error);
-                    return null;
-                });
-
+                popup = new Popup(map, event).element();
                 body().add(popup);
             }
         });        
@@ -297,7 +175,6 @@ public class AppEntryPoint implements EntryPoint {
                 bigMapLinkElement.setAttribute("href", map.createBigMapUrl());
             }
         });
-        
     }
 
    private static native void updateURLWithoutReloading(String newUrl) /*-{

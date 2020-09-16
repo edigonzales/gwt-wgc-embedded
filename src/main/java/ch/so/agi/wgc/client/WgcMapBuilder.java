@@ -1,7 +1,5 @@
 package ch.so.agi.wgc.client;
 
-import static elemental2.dom.DomGlobal.console;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,7 +27,6 @@ import proj4.Proj4;
 
 public class WgcMapBuilder {
     private String BACKGROUND_LAYER_ATTR_NAME = "bgLayer";
-    private String TITLE_ATTR_NAME = "title";
     private String ID_ATTR_NAME = "id";
     
     private Projection projection;
@@ -37,6 +34,7 @@ public class WgcMapBuilder {
     private HashMap<String, Tile> backgroundLayers = new HashMap<String, Tile>();
     private String baseUrlWms; 
     private String baseUrlFeatureInfo; 
+    private String baseUrlReport; 
     private String baseUrlBigMap;
     
     public WgcMapBuilder() {
@@ -64,14 +62,19 @@ public class WgcMapBuilder {
         this.baseUrlFeatureInfo = baseUrlFeatureInfo; 
         return this;
     }
+    
+    public WgcMapBuilder setBaseUrlReport(String baseUrlReport) {
+        this.baseUrlReport = baseUrlReport;
+        return this;
+    }
    
     public WgcMapBuilder setBaseUrlBigMap(String baseUrlBigMap) {
         this.baseUrlBigMap = baseUrlBigMap; 
         return this;
     }
     
-    public WgcMapBuilder addBackgroundLayers(List<BackgroundMapConfig> backgroundMapsConfig) {        
-        for (BackgroundMapConfig config : backgroundMapsConfig) {
+    public WgcMapBuilder addBackgroundLayers(List<BackgroundMapConfig> backgroundMaps) {        
+        for (BackgroundMapConfig config : backgroundMaps) {
             WmtsOptions wmtsOptions = OLFactory.createOptions();
             wmtsOptions.setUrl(config.getUrl());
             wmtsOptions.setLayer(config.getLayer());
@@ -92,7 +95,6 @@ public class WgcMapBuilder {
             wmtsLayer.setOpacity(1);
             wmtsLayer.setVisible(false);
             wmtsLayer.set(BACKGROUND_LAYER_ATTR_NAME, true);
-            wmtsLayer.set(TITLE_ATTR_NAME, config.getTitle());
             wmtsLayer.set(ID_ATTR_NAME, config.getId());
             
             backgroundLayers.put(config.getId(), wmtsLayer);
@@ -119,7 +121,7 @@ public class WgcMapBuilder {
         interactionOptions.setPinchRotate(false);
         mapOptions.setInteractions(Interaction.defaults(interactionOptions));
 
-        WgcMap map = new WgcMap(mapOptions, baseUrlWms, baseUrlFeatureInfo, baseUrlBigMap);
+        WgcMap map = new WgcMap(mapOptions, baseUrlWms, baseUrlFeatureInfo, baseUrlReport, baseUrlBigMap);
 
         backgroundLayers.forEach((key, value) -> {      
             map.addLayer(value);

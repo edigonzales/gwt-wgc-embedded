@@ -22,19 +22,26 @@ public class WgcMap extends ol.Map {
 
     private String baseUrlWms;
     private String baseUrlFeatureInfo;
+    private String baseUrlReport;
     private String baseUrlBigMap;
         
     private String backgroundLayer;
     private List<String> foregroundLayers = new ArrayList<String>();
     private List<Double> foregroundLayerOpacities = new ArrayList<Double>();
     
-    public WgcMap(MapOptions mapOptions, String baseUrlWms, String baseUrlFeatureInfo, String baseUrlBigMap) {
+    public WgcMap(MapOptions mapOptions, String baseUrlWms, String baseUrlFeatureInfo, String baseUrlReport, String baseUrlBigMap) {
         super(mapOptions);
         this.baseUrlWms = baseUrlWms;
         this.baseUrlFeatureInfo = baseUrlFeatureInfo;
+        this.baseUrlReport = baseUrlReport;
         this.baseUrlBigMap = baseUrlBigMap;
     }
     
+    /**
+     * Set background layer of map.
+     * 
+     * @param id The identifier of the background layer (WMTS layer name).
+     */
     public void setBackgroundLayer(String id) {
         Base layer = this.getMapLayerById(id);
         if (layer != null) {
@@ -45,6 +52,12 @@ public class WgcMap extends ol.Map {
         }
     }
     
+    /**
+     * Adds a WMS layer to the map.
+     * 
+     * @param id The identifier of the wms layer.
+     * @param opacity The opacity of the wms layer.
+     */
     public void addForegroundLayer(String id, double opacity) {
         ImageWmsParams imageWMSParams = OLFactory.createOptions();
         imageWMSParams.setLayers(id);
@@ -71,22 +84,62 @@ public class WgcMap extends ol.Map {
         this.foregroundLayerOpacities.add(opacity);
     } 
 
+    /**
+     * Returns the base url of the feature info service.
+     * 
+     * @return The base url of the feature info service.
+     */
     public String getBaseUrlFeatureInfo() {
         return baseUrlFeatureInfo;
     }
     
+    /** 
+     * Sets the base url of the report service.
+     * 
+     * @param baseUrlReport The base url of the report service.
+     */
+    public void setBaseUrlReport(String baseUrlReport) {
+        this.baseUrlReport = baseUrlReport;
+    }
+    
+    /**
+     * Returns the base url of the report service.
+     * @return The base url of the report service.
+     */
+    public String getBaseUrlReport() {
+        return baseUrlReport;
+    }
+    
+    /**
+     * Returns the identifier of the current background layer. 
+     * @return
+     */
     public String getBackgroundLayer() {
         return backgroundLayer;
     }
     
+    /**
+     * Returns the identifiers of all foreground layers (wms layers).
+     * @return Identifiers of all foreground layers.
+     */
     public List<String> getForegroundLayers() {
         return foregroundLayers;
     }
     
+    /**
+     * Returns the opacity values of all foreground layers (wms layers).
+     * @return Opacity values of all foreground layers.
+     */
     public List<Double> getForgroundLayerOpacities() {
         return foregroundLayerOpacities;
     }
     
+    /**
+     * Creates the url to the official web gis client. Makes use of
+     * our simple but nice so called "url interface".
+     * 
+     * @return The url to the official web gis client.
+     */
     public String createBigMapUrl() {
         // Nur notwendig, weil im Web GIS Client die Hintergrundkarte
         // nicht mit dem WMTS-Layernamen angesprochen wird.
