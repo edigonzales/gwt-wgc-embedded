@@ -143,7 +143,10 @@ public class WgcMap extends ol.Map {
     public String createBigMapUrl() {
         // Nur notwendig, weil im Web GIS Client die Hintergrundkarte
         // nicht mit dem WMTS-Layernamen angesprochen wird.
-        String bg = backgroundLayer.substring(10);
+        String bg = "";
+        if (backgroundLayer != null) {
+            bg = backgroundLayer.substring(10);
+        }
         
         // Zusammenbringen der Layer und der Layeropazität.
         String l = "";
