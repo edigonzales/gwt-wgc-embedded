@@ -1,8 +1,10 @@
 # gwt-wgc-embedded
 
 ## TODO
+- Externe WMS für Hintergrundkarte
 - Fehlermeldung falls keine bigMapLink
 - Wie ist das mit GetFeatureInfo bei externen WMS. Ist? Soll?
+
 
 
 ## Info
