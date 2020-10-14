@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
 import elemental2.dom.DomGlobal;
@@ -24,6 +25,7 @@ public class WgcMap extends ol.Map {
     private String baseUrlFeatureInfo;
     private String baseUrlReport;
     private String baseUrlBigMap;
+    private String versionWms = "1.3.0";
         
     private String backgroundLayer;
     private List<String> foregroundLayers = new ArrayList<String>();
@@ -35,6 +37,7 @@ public class WgcMap extends ol.Map {
         this.baseUrlFeatureInfo = baseUrlFeatureInfo;
         this.baseUrlReport = baseUrlReport;
         this.baseUrlBigMap = baseUrlBigMap;
+        
     }
     
     /**
@@ -58,14 +61,39 @@ public class WgcMap extends ol.Map {
      * @param id The identifier of the wms layer.
      * @param opacity The opacity of the wms layer.
      */
-    public void addForegroundLayer(String id, double opacity) {
+    public void addForegroundLayer(String layer, double opacity) {
+        String id;
+//        String encodedLayer;
+        
+        if (layer.startsWith("WMS")) {
+            console.log(layer);
+            
+            String[] layerParts = layer.split("\\|\\|");
+            
+            if (layerParts[1] == null || layerParts[2] == null || layerParts[3] == null) {
+                return;
+            }
+            
+            this.baseUrlWms = layerParts[1];
+            id = layerParts[2];
+            this.versionWms = layerParts[3];
+            
+//            encodedLayer = layerParts[0] + "%7C%7" + URL.encode(layerParts[1]) + "%7C%7" + layerParts[2] + "%7C%7" + layerParts[3];
+//            console.log(URL.decode(layerParts[1])); 
+            
+        } else {
+            id = layer;
+//            encodedLayer = layer;
+        }              
+
         ImageWmsParams imageWMSParams = OLFactory.createOptions();
         imageWMSParams.setLayers(id);
         imageWMSParams.set("FORMAT", "image/png");
         imageWMSParams.set("TRANSPARENT", "true");
+        imageWMSParams.set("VERSION", this.versionWms);
 
         ImageWmsOptions imageWMSOptions = OLFactory.createOptions();
-        imageWMSOptions.setUrl(baseUrlWms);
+        imageWMSOptions.setUrl(this.baseUrlWms);
         imageWMSOptions.setRatio(1.2f);
         imageWMSOptions.setParams(imageWMSParams);
 
@@ -77,10 +105,10 @@ public class WgcMap extends ol.Map {
         ol.layer.Image wmsLayer = new ol.layer.Image(layerOptions);
         wmsLayer.set(ID_ATTR_NAME, id);
         wmsLayer.setOpacity(opacity);
-        
+
         this.addLayer(wmsLayer);
         
-        this.foregroundLayers.add(id);
+        this.foregroundLayers.add(layer);
         this.foregroundLayerOpacities.add(opacity);
     } 
 

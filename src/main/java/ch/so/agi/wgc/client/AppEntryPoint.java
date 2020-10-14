@@ -20,6 +20,7 @@ import org.jboss.elemento.HtmlContentBuilder;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -119,7 +120,6 @@ public class AppEntryPoint implements EntryPoint {
             }
         }
         // TODO: falls nicht vorhanden eine Liste mit 1.
-
         if (Window.Location.getParameter("E") != null && Window.Location.getParameter("N") != null) {
             double easting = Double.valueOf(Window.Location.getParameter("E"));
             double northing = Double.valueOf(Window.Location.getParameter("N"));
@@ -128,7 +128,7 @@ public class AppEntryPoint implements EntryPoint {
         if (Window.Location.getParameter("zoom") != null) {
             map.getView().setZoom(Double.valueOf(Window.Location.getParameter("zoom")));
         }
-
+        
         if (bgLayer != null) {
             map.setBackgroundLayer(bgLayer);
         }
@@ -137,8 +137,10 @@ public class AppEntryPoint implements EntryPoint {
             map.addForegroundLayer(layerList.get(i), opacityList.get(i));
         }
         
-        BigMapLink bigMapLink = new BigMapLink(map, "In geo.so.ch/map ansehen");
-        body().add(bigMapLink.element());
+        if (Window.Location.getParameter("bigMapLink") == null) {
+            BigMapLink bigMapLink = new BigMapLink(map, "In geo.so.ch/map ansehen");
+            body().add(bigMapLink.element());
+        } 
         
         map.addClickListener(new ol.event.EventListener<MapBrowserEvent>() {
             @Override
@@ -168,7 +170,9 @@ public class AppEntryPoint implements EntryPoint {
                 newUrl += "&N=" + String.valueOf(northing);
                 newUrl += "&zoom=" + String.valueOf(view.getZoom());
 
-                updateURLWithoutReloading(newUrl);
+                String newUrlEncoded = URL.encode(newUrl);
+                // TODO: Externe baseUrlWms wird nicht encoded. Ist das ein Problem?
+                updateURLWithoutReloading(newUrlEncoded);
                 
                 Element bigMapLinkElement = DomGlobal.document.getElementById("bigMapLink");
                 bigMapLinkElement.removeAttribute("href");
