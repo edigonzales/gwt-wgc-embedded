@@ -109,13 +109,34 @@
       </snapshots>
     </repository>
   </repositories>
-  <build>
+  <build>  
     <plugins>
+    <!-- jetty-server from gwt must be excluded while testing. It conflicts
+    with Tomcat. Spring Boot (>= 2.4) picks up the wrong embedded server. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <classpathDependencyExcludes>
+            <classpathDependencyExclude>org.eclipse.jetty:jetty-server</classpathDependencyExclude>
+          </classpathDependencyExcludes>
+        </configuration>
+      </plugin>
+<plugin>
+    <artifactId>maven-jar-plugin</artifactId>
+    <configuration>
+        <excludes>
+            <exclude>**/gwt-unitCache/*</exclude>
+        </excludes>
+    </configuration>
+</plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <jvmArguments>-Dserver.port=${serverPort}</jvmArguments>
+          <!-- com.google.gwt wegen rpc -> Jar ist 20MB grösser-->
+          <excludeGroupIds>org.eclipse.jetty,org.dominokit,com.github.tdesjardins,org.gwtproject.i18n,org.jboss.gwt.elemento,com.google.elemental2,org.gwtproject.editor,org.gwtproject.event,org.gwtproject.core,org.gwtproject.safehtml,org.gwtproject.timer</excludeGroupIds>
           <excludes>
             <exclude>
               <groupId>org.eclipse.jetty</groupId>

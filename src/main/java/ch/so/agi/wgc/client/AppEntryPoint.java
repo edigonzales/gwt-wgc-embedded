@@ -67,7 +67,7 @@ public class AppEntryPoint implements EntryPoint {
     HTMLElement popup;
     
     public void onModuleLoad() {
-        configService.configServer(new AsyncCallback<SettingsResponse>() {
+        configService.settingsServer(new AsyncCallback<SettingsResponse>() {
             @Override
             public void onFailure(Throwable caught) {
                 console.error(caught.getMessage());

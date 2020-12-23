@@ -1,7 +1,8 @@
-FROM adoptopenjdk/openjdk11:latest
+#FROM adoptopenjdk/openjdk11:latest
+FROM adoptopenjdk:11.0.9_11-jre-hotspot
 
-RUN apt-get update && \
-    apt-get install -y curl
+#RUN apt-get update && \
+#    apt-get install -y curl
 
 EXPOSE 8080
 
@@ -16,4 +17,4 @@ USER 1001
 
 ENTRYPOINT ["java","-XX:MaxRAMPercentage=80.0","-Djava.security.egd=file:/dev/./urandom","-jar","/home/wgc/app.jar"]
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=60s CMD curl http://localhost:8080/actuator/health
+#HEALTHCHECK --interval=30s --timeout=30s --start-period=60s CMD curl http://localhost:8080/actuator/health
