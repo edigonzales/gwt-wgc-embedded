@@ -31,9 +31,9 @@ import com.google.gwt.xml.client.Text;
 import com.google.gwt.xml.client.XMLParser;
 
 import ch.so.agi.wgc.shared.BackgroundMapConfig;
-import ch.so.agi.wgc.shared.ConfigResponse;
-import ch.so.agi.wgc.shared.ConfigService;
-import ch.so.agi.wgc.shared.ConfigServiceAsync;
+import ch.so.agi.wgc.shared.SettingsResponse;
+import ch.so.agi.wgc.shared.SettingsService;
+import ch.so.agi.wgc.shared.SettingsServiceAsync;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
 import elemental2.dom.EventListener;
@@ -49,7 +49,7 @@ import ol.events.Event;
 
 public class AppEntryPoint implements EntryPoint {
     private MyMessages messages = GWT.create(MyMessages.class);
-    private final ConfigServiceAsync configService = GWT.create(ConfigService.class);
+    private final SettingsServiceAsync configService = GWT.create(SettingsService.class);
     
     // Settings
     private List<BackgroundMapConfig> backgroundMaps;
@@ -67,7 +67,7 @@ public class AppEntryPoint implements EntryPoint {
     HTMLElement popup;
     
     public void onModuleLoad() {
-        configService.configServer(new AsyncCallback<ConfigResponse>() {
+        configService.configServer(new AsyncCallback<SettingsResponse>() {
             @Override
             public void onFailure(Throwable caught) {
                 console.error(caught.getMessage());
@@ -75,7 +75,7 @@ public class AppEntryPoint implements EntryPoint {
             }
 
             @Override
-            public void onSuccess(ConfigResponse config) {
+            public void onSuccess(SettingsResponse config) {
                 backgroundMaps = config.getBackgroundMaps(); 
                 baseUrlWms = config.getBaseUrlWms();
                 baseUrlFeatureInfo = config.getBaseUrlFeatureInfo();
@@ -119,12 +119,17 @@ public class AppEntryPoint implements EntryPoint {
                 opacityList.add(Double.parseDouble(rawList.get(i)));
             }
         }
-        // TODO: falls nicht vorhanden eine Liste mit 1.
+        double easting;
+        double northing;
         if (Window.Location.getParameter("E") != null && Window.Location.getParameter("N") != null) {
-            double easting = Double.valueOf(Window.Location.getParameter("E"));
-            double northing = Double.valueOf(Window.Location.getParameter("N"));
-            map.getView().setCenter(new Coordinate(easting,northing));
+            easting = Double.valueOf(Window.Location.getParameter("E"));
+            northing = Double.valueOf(Window.Location.getParameter("N"));
+        } else {
+            easting = 2613276;
+            northing = 1238721;
         }
+        map.getView().setCenter(new Coordinate(easting,northing));
+        
         if (Window.Location.getParameter("zoom") != null) {
             map.getView().setZoom(Double.valueOf(Window.Location.getParameter("zoom")));
         }

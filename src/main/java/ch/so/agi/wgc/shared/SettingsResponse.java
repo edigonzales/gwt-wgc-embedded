@@ -1,21 +1,10 @@
-package ch.so.agi.wgc.server;
+package ch.so.agi.wgc.shared;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import ch.so.agi.wgc.shared.BackgroundMapConfig;
-
-@Component
-@EnableConfigurationProperties
-@ConfigurationProperties(prefix = "app")
-public class ApplicationConfig implements IsSerializable {
-    private List<BackgroundMapConfig> backgroundMaps = new ArrayList<BackgroundMapConfig>();
+public class SettingsResponse implements IsSerializable {
+    private List<BackgroundMapConfig> backgroundMaps;
     
     private String baseUrlWms;
     
@@ -24,10 +13,7 @@ public class ApplicationConfig implements IsSerializable {
     private String baseUrlBigMap;
     
     private String baseUrlReport;
-
     
-    public ApplicationConfig() {}
-
     public List<BackgroundMapConfig> getBackgroundMaps() {
         return backgroundMaps;
     }

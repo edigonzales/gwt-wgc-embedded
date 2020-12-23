@@ -16,17 +16,17 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import ch.so.agi.wgc.shared.BackgroundMapConfig;
-import ch.so.agi.wgc.shared.ConfigResponse;
-import ch.so.agi.wgc.shared.ConfigService;
+import ch.so.agi.wgc.shared.SettingsResponse;
+import ch.so.agi.wgc.shared.SettingsService;
 
-public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigService {
+public class SettingsServiceImpl extends SpringRemoteServiceServlet implements SettingsService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private HttpServletRequest request;
 
     @Autowired
-    private ApplicationConfig config;
+    private Settings config;
 
     @Override
     public void init() throws ServletException {
@@ -35,14 +35,14 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
     }
     
     @Override
-    public ConfigResponse configServer() throws IllegalArgumentException, IOException {
+    public SettingsResponse settingsServer() throws IllegalArgumentException, IOException {
         Enumeration<String> headerNames = request.getHeaderNames();
         for (Enumeration<String> headerName = headerNames; headerName.hasMoreElements();) {
             String header = headerName.nextElement();
             System.out.println(header + " : " + request.getHeader(header));  
         }
 
-        ConfigResponse response = new ConfigResponse();
+        SettingsResponse response = new SettingsResponse();
         response.setBaseUrlWms(config.getBaseUrlWms());
         response.setBaseUrlFeatureInfo(config.getBaseUrlFeatureInfo());
         response.setBaseUrlBigMap(config.getBaseUrlBigMap());
