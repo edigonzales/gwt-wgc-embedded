@@ -12,6 +12,7 @@ jobs:
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}} 
       BUILD_NUMBER: ${{ github.run_number }}
+      VERSION: 0.0.${{ github.run_number }}
     runs-on: ubuntu-latest
 
     steps:
@@ -105,7 +106,7 @@ jobs:
           java-version: 11
           distribution: 'liberica'
 
-      - name: Build native image
+      - name: Build jar
         run: |
           ./mvnw clean test
           ./mvnw -DskipTests -Penv-prod package
