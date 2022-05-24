@@ -42,7 +42,7 @@ BUILD_NUMBER=9999 mvn package
 docker run -p 8080:8080 sogis/wgc-embedded
 ```
 
-Die Env-Variable ``
+Die Env-Variable `SPRING_PROFILES_ACTIVE` steuert das Spring-Boot-Profil. Im Profil (application-_profile_name_.yml) sind die Basis-Url der Dienste definiert. Es stehen `dev`, `int`, `test` und `prod` zur Verfügung. Ist die Env-Variable nicht vorhanden, wird `prod` verwendet.
 
 ## Anleitung
 
