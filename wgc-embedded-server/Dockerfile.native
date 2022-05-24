@@ -1,0 +1,15 @@
+FROM alpine:3.16
+
+RUN adduser -S ilivalidator -u 1001
+
+WORKDIR /work/
+
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --chown=1001:root wgc-embedded-server/target/wgc-embedded-server /work/application
+
+EXPOSE 8080
+USER 1001
+
+CMD ["./application"]
