@@ -93,8 +93,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64
-          context: .
-          file: Dockerfile.native
+          context: wgc-embedded-server
+          file: wgc-embedded-server/Dockerfile.native
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           pull: true
