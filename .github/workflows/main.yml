@@ -84,10 +84,11 @@ jobs:
   build-jvm:
     env:
       DOCKER_ACCOUNT: sogis
-      DOCKER_REPO: wgc-embedded-jvm
+      DOCKER_REPO: wgc-embedded
       DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}} 
       BUILD_NUMBER: ${{ github.run_number }}
+      VERSION: 0.0.${{ github.run_number }}
     runs-on: ubuntu-latest
 
     steps:
