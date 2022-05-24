@@ -2,6 +2,7 @@
 
 ## TODO
 - **Tests:** Der Client muss Javascript verstehen, sonst sieht man nur den "noscript"-Inhalt. Alle möglichen Webclients durchprobiert. Auch HtmlUnit funktioniert nicht, da fetch() nicht implementiert ist. -> Playwright?
+- Jar Versioning
 - Externe WMS für Hintergrundkarte
 - Fehlermeldung falls keine bigMapLink
 - Wie ist das mit GetFeatureInfo bei externen WMS. Ist? Soll?

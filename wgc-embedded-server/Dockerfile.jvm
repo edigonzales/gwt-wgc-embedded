@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjdk-alpine-musl:11.0.15
+FROM bellsoft/liberica-openjdk-alpine-musl:17.0.3
 
 ARG UID=1001
 RUN adduser -S appuser -u $UID
