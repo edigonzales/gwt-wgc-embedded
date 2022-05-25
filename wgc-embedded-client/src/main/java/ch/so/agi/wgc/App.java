@@ -50,6 +50,15 @@ public class App implements EntryPoint {
 	public void onModuleLoad() {
         mapper = GWT.create(SettingsMapper.class);   
 
+        Location location = DomGlobal.window.location;
+        if (location.pathname.length() > 1) {
+            location.pathname += "/"; 
+        }
+
+        console.log(location.toString());
+        console.log(location.pathname);
+        
+
         DomGlobal.fetch("/settings")
         .then(response -> {
             if (!response.ok) {
@@ -78,13 +87,6 @@ public class App implements EntryPoint {
 	
     @SuppressWarnings("unchecked")
 	public void init() {	    
-        Location location = DomGlobal.window.location;
-        console.log(location.toString());
-        console.log(location.pathname);
-        
-//        if (location.pathname.length() > 1) {
-//            location.pathname += "/"; 
-//        }
 //        HTMLElement logoDiv = div().css("logo")
 //                .add(div()
 //                        .add(img().attr("src", location.protocol + "//" + location.host + location.pathname + "Logo.png").attr("alt", "Logo Kanton")).element()).element();

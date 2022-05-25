@@ -16,7 +16,7 @@ First Terminal:
 
 Second Terminal:
 ```
-mvn gwt:codeserver -pl *-client -am
+./mvnw gwt:codeserver -pl *-client -am
 ```
 
 ## Build
