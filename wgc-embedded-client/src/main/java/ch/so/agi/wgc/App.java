@@ -22,6 +22,7 @@ import ch.so.agi.wgc.settings.Settings;
 
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.Location;
 import elemental2.dom.Element;
 import ol.Coordinate;
 import ol.MapBrowserEvent;
@@ -77,6 +78,20 @@ public class App implements EntryPoint {
 	
     @SuppressWarnings("unchecked")
 	public void init() {	    
+        Location location = DomGlobal.window.location;
+        console.log(location.toString());
+        console.log(location.pathname);
+        
+//        if (location.pathname.length() > 1) {
+//            location.pathname += "/"; 
+//        }
+//        HTMLElement logoDiv = div().css("logo")
+//                .add(div()
+//                        .add(img().attr("src", location.protocol + "//" + location.host + location.pathname + "Logo.png").attr("alt", "Logo Kanton")).element()).element();
+
+        
+        
+        
         body().add(div().id(MAP_DIV_ID));
         
         map = new WgcMapBuilder()
