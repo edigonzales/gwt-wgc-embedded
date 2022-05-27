@@ -52,11 +52,14 @@ public class App implements EntryPoint {
 
         Location location = DomGlobal.window.location;
         if (location.pathname.length() > 1) {
+            console.log("adding /...");
             location.pathname += "/"; 
         }
 
         console.log(location.toString());
         console.log(location.pathname);
+        console.log(location.pathname + "settings");
+        console.log(location.protocol + "//" + location.host + location.pathname + "settings");
         
         DomGlobal.fetch(location.protocol + "//" + location.host + location.pathname + "settings")
         .then(response -> {
