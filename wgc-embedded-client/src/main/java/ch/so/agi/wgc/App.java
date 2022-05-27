@@ -62,6 +62,7 @@ public class App implements EntryPoint {
             pathname += "/"; 
         }
         
+        console.log(pathname);
         console.log(location.toString());
         console.log(location.pathname);
         console.log(location.pathname + "settings");
