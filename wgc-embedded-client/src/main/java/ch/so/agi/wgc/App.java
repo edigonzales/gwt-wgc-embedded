@@ -51,17 +51,23 @@ public class App implements EntryPoint {
         mapper = GWT.create(SettingsMapper.class);   
 
         Location location = DomGlobal.window.location;
-        if (location.pathname.length() > 1) {
-            console.log("adding /...");
-            location.pathname += "/"; 
+        String pathname = location.pathname;
+        
+        if (pathname.contains("index.html")) {
+            pathname = pathname.replace("index.html", "");
         }
-
+        
+        if (pathname.length() > 1) {
+            console.log("adding /...");
+            pathname += "/"; 
+        }
+        
         console.log(location.toString());
         console.log(location.pathname);
         console.log(location.pathname + "settings");
         console.log(location.protocol + "//" + location.host + location.pathname + "settings");
         
-        DomGlobal.fetch(location.protocol + "//" + location.host + location.pathname + "settings")
+        DomGlobal.fetch(location.pathname + "settings")
         .then(response -> {
             if (!response.ok) {
                 DomGlobal.window.alert(response.statusText + ": " + response.body);
