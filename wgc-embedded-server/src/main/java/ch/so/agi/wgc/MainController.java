@@ -80,7 +80,12 @@ public class MainController {
 //            datasetMap.put(dataset.getId(), dataset);            
 //        }
 //    }
-    
+
+    @GetMapping("/")
+    public ResponseEntity<String> root() {
+        return new ResponseEntity<String>("root", HttpStatus.OK);
+    }
+
     @GetMapping("/ping")
     public ResponseEntity<String> ping() {
         return new ResponseEntity<String>("wgc-embedded", HttpStatus.OK);

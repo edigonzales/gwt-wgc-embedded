@@ -57,10 +57,10 @@ public class App implements EntryPoint {
             pathname = pathname.replace("index.html", "");
         }
         
-        if (pathname.length() > 1) {
-            console.log("adding /...");
-            pathname += "/"; 
-        }
+//        if (pathname.length() > 1) {
+//            console.log("adding /...");
+//            pathname += "/"; 
+//        }
         
         console.log(pathname);
         console.log(location.toString());
