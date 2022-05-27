@@ -58,7 +58,7 @@ public class App implements EntryPoint {
         console.log(location.toString());
         console.log(location.pathname);
         
-        DomGlobal.fetch(location.pathname + "settings")
+        DomGlobal.fetch(location.protocol + "//" + location.host + location.pathname + "settings")
         .then(response -> {
             if (!response.ok) {
                 DomGlobal.window.alert(response.statusText + ": " + response.body);
