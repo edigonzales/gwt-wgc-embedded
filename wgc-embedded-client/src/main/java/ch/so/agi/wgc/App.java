@@ -62,11 +62,11 @@ public class App implements EntryPoint {
 //            pathname += "/"; 
 //        }
         
-        console.log(pathname);
-        console.log(location.toString());
-        console.log(location.pathname);
-        console.log(location.pathname + "settings");
-        console.log(location.protocol + "//" + location.host + location.pathname + "settings");
+//        console.log(pathname);
+//        console.log(location.toString());
+//        console.log(location.pathname);
+//        console.log(location.pathname + "settings");
+//        console.log(location.protocol + "//" + location.host + location.pathname + "settings");
         
         DomGlobal.fetch(pathname + "settings")
         .then(response -> {
@@ -95,14 +95,7 @@ public class App implements EntryPoint {
     }
 	
     @SuppressWarnings("unchecked")
-	public void init() {	    
-//        HTMLElement logoDiv = div().css("logo")
-//                .add(div()
-//                        .add(img().attr("src", location.protocol + "//" + location.host + location.pathname + "Logo.png").attr("alt", "Logo Kanton")).element()).element();
-
-        
-        
-        
+	public void init() {
         body().add(div().id(MAP_DIV_ID));
         
         map = new WgcMapBuilder()
