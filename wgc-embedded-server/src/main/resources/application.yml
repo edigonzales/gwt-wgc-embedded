@@ -14,7 +14,7 @@ server:
 # ========================
 logging:
   level:
-    org.springframework: ${LOG_LEVEL:DEBUG} 
+    org.springframework: ${LOG_LEVEL:INFO} 
 
 spring:
   profiles:
