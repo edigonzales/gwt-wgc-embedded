@@ -81,6 +81,7 @@ public class MainController {
 //        }
 //    }
 
+    // Damit GWT funktioniert, muss im Browser explizit "index.html" eingetippt werden.
     @GetMapping("/")
     public ResponseEntity<String> root() {
         return new ResponseEntity<String>("root", HttpStatus.OK);

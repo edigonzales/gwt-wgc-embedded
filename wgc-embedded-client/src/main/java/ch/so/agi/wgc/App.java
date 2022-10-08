@@ -174,7 +174,23 @@ public class App implements EntryPoint {
                 
                 String newUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost() + Window.Location.getPath();
                 newUrl += "?bgLayer=" + map.getBackgroundLayer();
-                newUrl += "&layers=" + String.join(",", map.getForegroundLayers());
+                
+                String layerNames = "";
+                for (int i=0; i<map.getForegroundLayers().size(); i++) {
+                    String layerName = map.getForegroundLayers().get(i);
+                    boolean isVisible = map.getForegroundLayerVisibilities().get(layerName);
+                    if (!isVisible) {
+                        layerName += "!";
+                    }
+                    
+                    if (i != map.getForegroundLayers().size()-1) {
+                        layerName += ",";
+                    }
+                    
+                    layerNames += layerName;
+                } 
+                newUrl += "&layers=" + layerNames;
+                
                 newUrl += "&layers_opacity=" + map.getForgroundLayerOpacities().stream().map(String::valueOf).collect(Collectors.joining(","));
                 newUrl += "&E=" + String.valueOf(easting);
                 newUrl += "&N=" + String.valueOf(northing);

@@ -3,7 +3,9 @@ package ch.so.agi.wgc;
 import static elemental2.dom.DomGlobal.console;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import elemental2.dom.DomGlobal;
 import ol.MapOptions;
@@ -26,6 +28,7 @@ public class WgcMap extends ol.Map {
     private String backgroundLayer;
     private List<String> foregroundLayers = new ArrayList<String>();
     private List<Double> foregroundLayerOpacities = new ArrayList<Double>();
+    private Map<String,Boolean> foregroundLayerVisibilites = new HashMap<String,Boolean>();
     
     public WgcMap(MapOptions mapOptions, String baseUrlWms, String baseUrlFeatureInfo, String baseUrlReport, String baseUrlBigMap) {
         super(mapOptions);
@@ -81,6 +84,12 @@ public class WgcMap extends ol.Map {
 //            encodedLayer = layer;
         }              
 
+        boolean isVisible = true;
+        if (layer.endsWith("!")) {
+            isVisible = false;
+            layer = layer.substring(0, layer.length() - 1);
+        }
+
         ImageWmsParams imageWMSParams = OLFactory.createOptions();
         imageWMSParams.setLayers(id);
         imageWMSParams.set("FORMAT", "image/png");
@@ -100,11 +109,15 @@ public class WgcMap extends ol.Map {
         ol.layer.Image wmsLayer = new ol.layer.Image(layerOptions);
         wmsLayer.set(ID_ATTR_NAME, id);
         wmsLayer.setOpacity(opacity);
-
+        wmsLayer.setVisible(isVisible);
+        
         this.addLayer(wmsLayer);
         
+        // Should be done differently if we introduce more and more
+        // layer properties.
         this.foregroundLayers.add(layer);
         this.foregroundLayerOpacities.add(opacity);
+        this.foregroundLayerVisibilites.put(layer,isVisible);
     } 
 
     /**
@@ -157,6 +170,10 @@ public class WgcMap extends ol.Map {
         return foregroundLayerOpacities;
     }
     
+    public Map<String,Boolean> getForegroundLayerVisibilities() {
+        return foregroundLayerVisibilites;
+    }
+        
     /**
      * Creates the url to the official web gis client. Makes use of
      * our simple but nice so called "url interface".
@@ -174,11 +191,17 @@ public class WgcMap extends ol.Map {
         // Zusammenbringen der Layer und der Layeropazität.
         String l = "";
         for (int i=0; i < foregroundLayers.size(); i++) {
-            l += foregroundLayers.get(i);
+            String layerName = foregroundLayers.get(i);
             
+            l += layerName;
+                        
             int transparency = (int) ((1.0 - foregroundLayerOpacities.get(i)) * 100.0);
             l += "[" + String.valueOf(transparency) + "]";
             
+            if (!foregroundLayerVisibilites.get(layerName)) {
+                l += "!";
+            }
+
             if (i != foregroundLayers.size()-1) {
                 l += ",";
             }
